@@ -1,0 +1,10 @@
+
+<div>
+    Übersicht über alle aktiven Clients: 
+    <% clients.forEach(client => { %>
+        <%= client.name %> 
+        <form action="/SendUDPMessage" method="POST">
+            <button type="submit">Send UDP Message</button>
+          </form>          
+    <% }) %>
+</div>

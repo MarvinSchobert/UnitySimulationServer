@@ -1,0 +1,25 @@
+{
+  "name": "unitysimulationserver",
+  "version": "1.0.0",
+  "description": "",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "nodemon server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/MarvinSchobert/UnitySimulationServer.git"
+  },
+  "author": "Marvin Schobert",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/MarvinSchobert/UnitySimulationServer/issues"
+  },
+  "homepage": "https://github.com/MarvinSchobert/UnitySimulationServer#readme",
+  "dependencies": {
+    "express": "^4.18.1",
+    "express-ejs-layouts": "^2.5.1",
+    "ejs": "^3.1.6"
+  }
+}
