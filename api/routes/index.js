@@ -96,6 +96,7 @@ function sendAllObjects (i, mode){
     obj.rotY = syncObjects[j].rotY;
     obj.rotZ = syncObjects[j].rotZ;
     obj.rotW = syncObjects[j].rotW;
+    obj.syncInfoString = syncObjects[j].syncInfoString;
     obj.parentID = "";// msg.parentID;
     sendUDP(clients[i].address, clients[i].port, clients[i].name, obj);
   } 
@@ -105,6 +106,8 @@ function spawnObject (msg, remote){
   console.log("Spawn data is sent");
   for (var i = 0; i < syncObjects.length; i++){
     if (syncObjects[i].ID == msg.ID){
+      console.log("ID already existent")
+      console.log(JSON.stringify(msg));
       return;
     }
   }
@@ -120,6 +123,7 @@ function spawnObject (msg, remote){
   obj.rotY = msg.rotY;
   obj.rotZ = msg.rotZ;
   obj.rotW = msg.rotW;
+  obj.syncInfoString = msg.syncInfoString;
   obj.parentID = "";// msg.parentID;
   syncObjects.push(obj);
   for (var i = 0; i < clients.length; i++) {
@@ -144,6 +148,7 @@ function changeObject (msg, remote){
       syncObjects[i].rotY = msg.rotY;
       syncObjects[i].rotZ = msg.rotZ;
       syncObjects[i].rotW = msg.rotW;
+      syncObjects[i].syncInfoString = msg.syncInfoString;
       syncObjects[i].parentID = "";// msg.parentID;
       for (var j = 0; j < clients.length; j++) {
         if (clients[j].address != remote.address){
