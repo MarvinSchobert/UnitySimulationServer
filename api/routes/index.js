@@ -35,7 +35,6 @@ server.on("listening", function () {
 });
 
 server.on("message", function (message, remote) {
-  console.log("Message from: " + remote.address + ":" + remote.port + " - ");
   var msg = JSON.parse(message.toString());
   
   // Neuen Client hinzufügen:
@@ -81,7 +80,6 @@ function registerClient (msg, remote){
 }
 
 function sendAllObjects (i, mode){  
-  console.log("All data is sent");
   for (var j = 0; j < syncObjects.length; j++){
     var obj = {};
     obj.type = mode;
@@ -134,7 +132,6 @@ function spawnObject (msg, remote){
 }
 
 function changeObject (msg, remote){
-  console.log("Change data is sent");
   for (var i = 0; i < syncObjects.length; i++){
     if (syncObjects[i].ID == msg.ID){
       syncObjects[i].type = "ChangeInfo";
@@ -162,6 +159,7 @@ function changeObject (msg, remote){
 
 function sendUDP(address, port, name, message) {
   var data = Buffer.from(JSON.stringify(message));
+  console.log ("Sending " + message.type + " Message to " + address + ", " + port);
   server.send(data, port, address, function (error) {
     if (error) {
       console.log(error);
