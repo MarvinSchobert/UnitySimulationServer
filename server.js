@@ -5,8 +5,11 @@ port = process.env.PORT || 3000;
 app.listen(port);
 console.log("book list RESTful API server started on: " + port);
 
-const indexRouter = require("./api/routes");
-app.use("/unityServer", indexRouter);
+const unityRouter = require("./api/routes/unityServer");
+app.use("/unityServer", unityRouter);
+
+const simulationRouter = require("./api/routes/simulationServer");
+app.use("/simulationServer", simulationRouter);
 
 app.set("view engine", "ejs");
 app.set("views", __dirname + "/views");

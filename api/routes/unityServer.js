@@ -1,6 +1,14 @@
 var dgram = require("dgram");
 const { send } = require("process");
 const router = require("express").Router();
+'use strict';
+
+const { networkInterfaces } = require('os');
+
+const nets = networkInterfaces();
+const results = {}; // Or just '{}', an empty object
+
+
 
 var clients = [];
 var syncObjects = [];
@@ -22,7 +30,6 @@ router.route("/register").post((req, res) => {
 
 
 var PORT = 33333;
-//var HOST = "127.0.0.1";
 var HOST = "192.168.137.1";
 
 var server = dgram.createSocket("udp4");
@@ -53,6 +60,28 @@ server.on("message", function (message, remote) {
   }
 
 });
+
+
+for (const name of Object.keys(nets)) {
+  for (const net of nets[name]) {
+      // Skip over non-IPv4 and internal (i.e. 127.0.0.1) addresses
+      // 'IPv4' is in Node <= 17, from 18 it's a number 4 or 6
+      const familyV4Value = typeof net.family === 'string' ? 'IPv4' : 4
+      if (net.family === familyV4Value && !net.internal) {
+          if (!results[name]) {
+              results[name] = [];
+          }
+          results[name].push(net.address);
+      }
+     
+  }
+}
+console.log(results)
+console.log(results["Ethernet"][0])
+if (results["LAN-Verbindung* 10"]!=null){
+  HOST = results["LAN-Verbindung* 10"][0];
+}
+else {HOST = results["Ethernet"][0];}
 
 server.bind(PORT, HOST);
 
