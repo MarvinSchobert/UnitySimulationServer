@@ -1,0 +1,14 @@
+const router = require("express").Router();
+
+var array = [];
+
+router.route("/:varX").get(async (req, res) => {  
+  res.send ("Hello World. Var:" + req.params.varX);
+});
+
+router.route("/").post((req, res) => {
+    console.log(req.body.parameter)
+  res.render("index", {
+    clients: clients,
+  });
+});

@@ -1,0 +1,116 @@
+<%- include('partials/header') %>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.5.2/css/bootstrap.min.css">
+<div style="padding:10px;">
+    <div class= "row">
+        <div class="col-lg-12">
+            <div class= "col-lg-4"> 
+                <form action="http://localhost:3000/simulationServer/reset" method="POST">
+                    <div class="form-group">
+                        <button type="submit" class="btn btn-primary">Simulation zurücksetzen</button>
+                    </div>
+                </form>
+            </div>
+            <div class="col-lg-4">
+                    <form action="http://localhost:3000/simulationServer/order" method="POST">
+                        <div class="form-group">
+                            <input type="number" name="anzahl" value="" placeholder=0 id="anzahl" autofocus="autofocus" class="form-control "/>
+                        </div>
+                        <div class="form-group">
+                            <button type="submit" class="btn btn-primary">Bestellungen aufgeben</button>
+                        </div>
+                    </form>
+                </div>
+            </div>   
+        </div>  
+    </div> 
+    <div class="container col-lg-12">
+        Gesamteinnahmen: <%= calculationResults.gesamtEinnahmen %>
+        <br>
+        <br>
+        Prozesse: <br>
+       
+        <table border="1">
+            <tr>
+                <th>Prozessvariante</th>
+                <th>Anzahl</th>
+                <th>Mittlere Durchlaufzeit [min]</th>
+                <th>Gesamtkosten (Var)</th>
+                <th>Durchschnittskosten</th>
+                <th>Bestellungen</th>
+            </tr>
+            <% for (var i = 0; i < calculationResults.processVariants.length; i++) { %>
+            <tr>
+                <th> <%= i+1 %> </th>
+                <th> <%= calculationResults.processVariants[i].counter %> </th>
+                <th> <%= (calculationResults.processVariants[i].totalTime / calculationResults.processVariants[i].counter) / 1000 / 60 %> </th>
+                <th> <%= calculationResults.processVariants[i].kosten %> EUR</th>
+                <th> <%= calculationResults.processVariants[i].kosten / calculationResults.processVariants[i].counter %> EUR</th>
+                <th> <%= calculationResults.processVariants[i].auftraege.toString() %> </th>
+            </tr>
+            <% } %>
+        
+
+                
+
+        </table>
+        <br>
+        Auslastungen:
+        <table border="1">
+            <tr>
+                <th>Name</th>
+                <th>Abteilung</th>
+                <th>Gesamte Arbeitszeit [min]</th>
+                <th>Auslastung</th>
+                <th>Wertschöpfung</th>
+                <th>Ausgaben</th>
+            </tr>
+            <% for (var i = 0; i < calculationResults.workerResults.length; i++) { %>
+                <tr>
+                    <th> <%= calculationResults.workerResults[i].name %> </th>
+                    <th> <%= calculationResults.workerResults[i].abteilung %> </th>
+                    <th> <%= calculationResults.workerResults[i].workingTime / 1000/60 %> </th>
+                    <th> <%= Math.round (calculationResults.workerResults[i].workingTime / calculationResults.workerResults[i].completeSimTime * 100) %> % </th>
+                    <th> <%= calculationResults.workerResults[i].wertschöpfung %> EUR </th>                
+                    <th> <%= calculationResults.workerResults[i].bezahlung %> EUR </th>
+                    
+                </tr>
+                <% } %>
+            <tr>
+                <th> </th>
+                <th> </th>
+                <th> </th>
+                <th> </th>
+                <th> </th>
+                <th> </th>
+            </tr>
+            <tr>
+                <th>Summe</th>
+                <th> </th>
+                <th> </th>
+                <th> </th>
+                <th> <%= calculationResults.gesamtWertschöpfung %> EUR</th>
+                <th> <%= calculationResults.gesamtAusgaben %> EUR </th>
+            </tr>
+        </table>
+    </div>
+    <br>
+    <div class="container col-lg-12">
+
+        <script src="https://cdn.dhtmlx.com/gantt/edge/dhtmlxgantt.js" ></script>
+        <link rel="stylesheet" href="https://cdn.dhtmlx.com/gantt/edge/dhtmlxgantt.css" type="text/css">
+        <div id="gantt_here" style='width:100%; height:100vh;'></div>
+
+        <script type="text/javascript">gantt.config.date_format = "%Y-%m-%d %H:%i:%s"
+            gantt.config.duration_unit = "minute"
+            gantt.config.show_quick_info = true;
+            gantt.config.task_date = "%H:%i:%s %d-%m-%Y";
+            gantt.plugins({ 
+                tooltip: true 
+            }); 
+            // gantt.config.correct_work_time = true; // No work on weekends
+            // gantt.config.readonly = true;
+            gantt.init("gantt_here");
+            gantt.load("/simulationServer/data");
+        </script>
+    </div>
+</div>

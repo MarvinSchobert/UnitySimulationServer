@@ -4,6 +4,7 @@ const router = require("express").Router();
 'use strict';
 
 const { networkInterfaces } = require('os');
+const { isBooleanObject } = require("util/types");
 
 const nets = networkInterfaces();
 const results = {}; // Or just '{}', an empty object
@@ -15,7 +16,8 @@ var syncObjects = [];
 
 router.route("/").get((req, res) => {
   // res.json(["Tony", "Lisa", "Michael", "Ginger", "Food"]);
-  res.render("index", {
+  
+  res.render("multiplayerOverview", {
     clients: clients,
     items: syncObjects,
   });
@@ -23,14 +25,16 @@ router.route("/").get((req, res) => {
 
 router.route("/register").post((req, res) => {
   // console.log(req);
-  res.render("index", {
+  res.render("multiplayerOverview", {
     clients: clients,
   });
 });
 
 
 var PORT = 33333;
-var HOST = "192.168.137.1";
+// var HOST = "192.168.137.1";
+// var HOST = "127.0.0.1;"
+var HOST = "192.168.0.150"
 
 var server = dgram.createSocket("udp4");
 
@@ -54,9 +58,18 @@ server.on("message", function (message, remote) {
     spawnObject (msg, remote);
   }
 
-   // Gameobject updaten
-   if (msg.type == "ChangeRqt"){
+  // Gameobject entfernen
+  if (msg.type == "RemoveRqt"){
+    removeObject (msg, remote);
+  }
+
+  // Gameobject updaten
+  if (msg.type == "ChangeRqt"){
     changeObject (msg, remote);
+  }
+
+  if (msg.type == "SyncVarRqt"){
+    syncVar (msg, remote);
   }
 
 });
@@ -77,11 +90,11 @@ for (const name of Object.keys(nets)) {
   }
 }
 console.log(results)
-console.log(results["Ethernet"][0])
+if (results["Ethernet"]!= null) console.log(results["Ethernet"][0])
 if (results["LAN-Verbindung* 10"]!=null){
   HOST = results["LAN-Verbindung* 10"][0];
 }
-else {HOST = results["Ethernet"][0];}
+else if (results["Ethernet"]!= null) {HOST = results["Ethernet"][0];}
 
 server.bind(PORT, HOST);
 
@@ -109,6 +122,8 @@ function registerClient (msg, remote){
 }
 
 function sendAllObjects (i, mode){  
+  console.log("");
+  console.log("Item amount: " + syncObjects.length);
   for (var j = 0; j < syncObjects.length; j++){
     var obj = {};
     obj.type = mode;
@@ -125,16 +140,62 @@ function sendAllObjects (i, mode){
     obj.rotW = syncObjects[j].rotW;
     obj.syncInfoString = syncObjects[j].syncInfoString;
     obj.parentID = "";// msg.parentID;
+    console.log("Send Client " + clients[i].address + " spawnObject: " + obj.name);
     sendUDP(clients[i].address, clients[i].port, clients[i].name, obj);
   } 
 }
 
+function removeObject (msg, remote){
+  console.log("");
+  console.log("Removing Object data is sent: " +  JSON.stringify(msg));
+  
+  for (var i = 0; i < syncObjects.length; i++){
+    if (syncObjects[i].ID == msg.ID){
+      var obj = {};
+      obj.type = "RemoveInfo";
+      obj.ID = msg.ID;
+      
+      obj.syncInfoString = msg.syncInfoString;
+      obj.parentID = "";// msg.parentID;
+      for (var j = 0; j < clients.length; j++) {
+          sendUDP(clients[j].address, clients[j].port, clients[j].name, obj);        
+      }
+      // Jetzt noch Objekt entfernen:
+      syncObjects.splice(i, 1);
+      break;
+    }
+  } 
+}
+
+function syncVar (msg, remote){
+  console.log("");
+  console.log("Syncing Var is sent: " +  JSON.stringify(msg));
+  
+  for (var i = 0; i < syncObjects.length; i++){
+    if (syncObjects[i].ID == msg.ID){
+      var obj = {};
+      obj.ID = msg.ID;
+      obj.type = "SyncVarInfo";
+      obj.stats = msg.stats;
+      obj.syncInfoString = msg.syncInfoString;
+      obj.parentID = "";// msg.parentID;
+      for (var j = 0; j < clients.length; j++) {
+        if (clients[j].address != remote.address) {
+          sendUDP(clients[j].address, clients[j].port, clients[j].name, obj);       
+        } 
+      }
+      break;
+    }
+  } 
+}
+
 function spawnObject (msg, remote){
-  console.log("Spawn data is sent");
+  console.log("");
+  console.log("Spawn new Object data is sent: " +  JSON.stringify(msg));
+  
   for (var i = 0; i < syncObjects.length; i++){
     if (syncObjects[i].ID == msg.ID){
       console.log("ID already existent")
-      console.log(JSON.stringify(msg));
       return;
     }
   }
@@ -188,7 +249,7 @@ function changeObject (msg, remote){
 
 function sendUDP(address, port, name, message) {
   var data = Buffer.from(JSON.stringify(message));
-  console.log ("Sending " + message.type + " Message to " + address + ", " + port);
+  // console.log ("Sending " + message.type + " Message to " + address + ", " + port);
   server.send(data, port, address, function (error) {
     if (error) {
       console.log(error);

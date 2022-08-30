@@ -1,0 +1,16 @@
+<%- include('partials/header') %>
+
+<div>
+    Übersicht über alle aktiven Clients: <br><br>
+    <% clients.forEach(client => { %>
+        <%= client.name %> 
+        <form action="/SendUDPMessage" method="POST">
+            <button type="submit">Send UDP Message</button>
+          </form>          
+    <% }) %>
+    Übersicht über alle aktiven items: <br><br>
+    <% items.forEach(item => { %>
+        <%= item.name %> 
+        <%= item.ID %> <br>
+    <% }) %>
+</div>
