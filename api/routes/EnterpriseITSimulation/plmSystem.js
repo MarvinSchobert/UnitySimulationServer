@@ -1,9 +1,24 @@
 const router = require("express").Router();
 
-var erpData = [];
-
+var ebomData = [];
+//
+//
+//
+//
+//
+//
+//
+//
+ebomData.push({"name": "Item1", "amount": 2}, 
+{"name": "Item1", "amount": 2},
+{"name": "Item1", "amount": 2},
+{"name": "Item1", "amount": 2},
+{"name": "Item1", "amount": 2},
+{"name": "Item1", "amount": 2})
 router.route("/").get(async (req, res) => {  
-    res.render("plmSystem")
+    res.render("plmSystem", {
+        bom: ebomData,
+    })
 });
 
 router.route("/getProductBOM/:itemName").get(async (req, res) => {  

@@ -1,3 +1,11 @@
 <%- include('partials/header') %>
 
 Dies ist das PLM System
+
+<div>
+<% for (var i = 0; i < bom.length; i++) { %>
+    <div>
+        <%= i + ": " + bom[i].name %>
+    </div>
+<% } %>
+</div>
