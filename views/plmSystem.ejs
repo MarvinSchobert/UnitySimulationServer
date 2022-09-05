@@ -2,10 +2,51 @@
 
 Dies ist das PLM System
 
-<div>
+<div class="col ms-auto">
+    
 <% for (var i = 0; i < bom.length; i++) { %>
-    <div>
-        <%= i + ": " + bom[i].name %>
-    </div>
+    <details class="col-lg-8 card">
+        <summary> <%= bom[i].name %> </summary>
+        <div>
+            Itemname: <%= bom[i].name %><br>
+            Item ID: <%= bom[i].id %><br>
+            Produkttyp: <%= bom[i].produktTyp %><br>
+
+            <% for (var j = 0; j < bom[i].children.length; j++) { %>
+                <details class="col-lg-12 card">
+                    <summary> <%= bom[i].children[j].name %> </summary>
+                    <div>
+                        Itemname: <%= bom[i].children[j].name %> <br>
+                        Item ID: <%= bom[i].children[j].id %><br>
+                        Produkttyp: <%= bom[i].children[j].produktTyp %><br>
+
+                        <% for (var k = 0; k < bom[i].children[j].children.length; k++) { %>
+                            <details class="col-lg-12 card">
+                                <summary> <%= bom[i].children[j].children[k].name %> </summary>
+                                <div>
+                                    Itemname: <%= bom[i].children[j].children[k].name %> <br>
+                                    Item ID: <%= bom[i].children[j].children[k].id %> <br>
+                                    Produkttyp: <%= bom[i].children[j].children[k].produktTyp %> <br>
+                                    <% for (var l = 0; l < bom[i].children[j].children[k].children.length; l++) { %>
+                                        <details class="col-lg-12 card">
+                                            <summary> <%= bom[i].children[j].children[k].children[l].name %> </summary>
+                                            <div>
+                                                Itemname: <%= bom[i].children[j].children[k].children[l].name %> <br>
+                                                Item ID: <%= bom[i].children[j].children[k].children[l].id %> <br>
+                                                Produkttyp: <%= bom[i].children[j].children[k].children[l].produktTyp %> <br>
+                                            
+                                            
+                                            </div>
+                                        </details>    
+                                    <% } %>
+                                
+                                </div>
+                            </details>    
+                        <% } %>
+                    </div>
+                </details>    
+            <% } %>
+        </div>
+    </details>    
 <% } %>
 </div>

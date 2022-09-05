@@ -1,3 +1,22 @@
 <%- include('partials/header') %>
 
 Dies ist das SCM System
+
+<div class="col ms-auto">
+    <table border="1">
+    <tr>
+        <th width=500 style="background-color:#1c87c9;">Materialart</th>
+        <th width=300 style="background-color:#1c87c9;">Lieferant</th>
+        <th width=300 style="background-color:#1c87c9;">Konditionen (Stück/ Preis pro Stück)...</th>
+    </tr>
+    <% for (var i = 0; i < lieferantenData.length; i++) { %>
+        <tr>
+            <th width=500 > <%= lieferantenData[i].lieferMatName %> </th>
+            <th width=300 > <%= lieferantenData[i].name %> </th>
+            <% for (var j = 0; j < lieferantenData[i].lieferKonditionen.length; j++) { %>
+                <th width=300 > <%= lieferantenData[i].lieferKonditionen[j].stk %> für <%= lieferantenData[i].lieferKonditionen[j].preisProStk %> <%= lieferantenData[i].lieferKonditionen[j].einheit %></th>
+            <% } %>
+        </tr>
+    <% } %>
+</table>
+</div>
