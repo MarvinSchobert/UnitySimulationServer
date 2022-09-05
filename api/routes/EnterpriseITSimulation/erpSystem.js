@@ -1,4 +1,5 @@
 const router = require("express").Router();
+const fs = require('fs');
 
 var inventory = []; // Inventar enthält Bestände
 // ein Objekt:
@@ -16,17 +17,52 @@ var stammdaten = []; // Inventar enthält Bestände
 //     produktTyp: String, // Halberzeugnis, Fertigerzeugnis, Rohmaterial
 //     itemName: String // mit nem Namen
 // }
-stammdaten.push(
-  { itemId: "MAT01", itemName: "Fahrrad", produktTyp: "Fertigerzeugnis" },
-  { itemId: "MAT02", itemName: "ZSB_Rahmen", produktTyp: "Halberzeugnis" },
-  { itemId: "MAT03", itemName: "Rahmen", produktTyp: "Rohmaterial" },
-  { itemId: "MAT041", itemName: "Pedal", produktTyp: "Rohmaterial" },
-  { itemId: "MAT042", itemName: "Bremse", produktTyp: "Rohmaterial" },
-  { itemId: "MAT043", itemName: "Gangschaltung", produktTyp: "Rohmaterial" },
-  { itemId: "MAT044", itemName: "Lenker", produktTyp: "Rohmaterial" },
-  { itemId: "MAT05", itemName: "Reifen", produktTyp: "Rohmaterial" }
-);
 
+initData("ERP_Inventory.json", "");
+initData("ERP_Stammdaten.json", "stammdaten");
+// Es wird ebomData aus der Datenbank gelesen, wenn Einträge vorhanden sind, diese nehmen, ansonsten generischen Inhalt einfüllen
+function initData (path, type){  
+  try {
+    if (fs.existsSync(path)) {
+      let rawdata = fs.readFileSync(path);
+      let data= JSON.parse(rawdata);
+
+      if (data != null && data.length != 0){
+        if (data != null && data.length != 0){
+          if (type == ""){
+            inventory = data;
+          }
+         else if (type == "stammdaten"){
+          stammdaten = data;
+          }
+      }
+    }
+      else {
+        pushNewData(type)
+      }
+    }
+    else {
+      pushNewData(type)
+    }
+  } catch(err) {
+    console.error(err)
+  }  
+}
+
+function pushNewData (type){
+  if (type == "stammdaten"){
+    stammdaten.push(
+      { itemId: "MAT01", itemName: "Fahrrad", produktTyp: "Fertigerzeugnis" },
+      { itemId: "MAT02", itemName: "ZSB_Rahmen", produktTyp: "Halberzeugnis" },
+      { itemId: "MAT03", itemName: "Rahmen", produktTyp: "Rohmaterial" },
+      { itemId: "MAT041", itemName: "Pedal", produktTyp: "Rohmaterial" },
+      { itemId: "MAT042", itemName: "Bremse", produktTyp: "Rohmaterial" },
+      { itemId: "MAT043", itemName: "Gangschaltung", produktTyp: "Rohmaterial" },
+      { itemId: "MAT044", itemName: "Lenker", produktTyp: "Rohmaterial" },
+      { itemId: "MAT05", itemName: "Reifen", produktTyp: "Rohmaterial" }
+    );
+  }
+}
 var auftraege = []; // Enthält alle Aufträge und ihren Bearbeitungsfortschritt
 
 router.route("/").get(async (req, res) => {
@@ -53,6 +89,19 @@ router.route("/wareEntnehmen").post((req, res) => {
   }
   res.redirect("/erpSystem");
 });
+
+router.route("/saveData").post((req, res) => {
+  try {
+    fs.writeFileSync("ERP_Inventory.json", JSON.stringify(inventory));
+    console.log("ERP.json has been saved with the user data");
+    fs.writeFileSync("ERP_Stammdaten.json", JSON.stringify(stammdaten));
+    console.log("ERP.json has been saved with the user data");
+  } catch (err) {
+    console.error(err);
+  }
+  res.redirect("/");
+});
+
 
 router.route("/warePruefen/:itemName/:itemAnzahl").get(async (req, res) => {
   var result = {};

@@ -1,52 +1,185 @@
 <%- include('partials/header') %>
+<style>
+    .modal {
+    background-color: rgba(0,0,0,0.4); /* Transparent dimmed overlay */
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: table;
+    }
+
+    .modal.hidden {
+    display: none;
+    }
+
+    .modal .container {
+    display: table-cell;
+    text-align: center;
+    vertical-align: middle;
+    width: 200px;
+    }
+
+    .modal .body {
+    box-shadow: 5px 10px #888888;
+    display: inline-block;
+    background-color: white;
+    border: 1px solid black; 
+    padding: 10px;
+    }
+</style>
 
 Dies ist das PLM System
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
+
 
 <div class="col ms-auto">
-    
-<% for (var i = 0; i < bom.length; i++) { %>
-    <details class="col-lg-8 card">
-        <summary> <%= bom[i].name %> </summary>
-        <div>
-            Itemname: <%= bom[i].name %><br>
-            Item ID: <%= bom[i].id %><br>
-            Produkttyp: <%= bom[i].produktTyp %><br>
-
-            <% for (var j = 0; j < bom[i].children.length; j++) { %>
-                <details class="col-lg-12 card">
-                    <summary> <%= bom[i].children[j].name %> </summary>
-                    <div>
-                        Itemname: <%= bom[i].children[j].name %> <br>
-                        Item ID: <%= bom[i].children[j].id %><br>
-                        Produkttyp: <%= bom[i].children[j].produktTyp %><br>
-
-                        <% for (var k = 0; k < bom[i].children[j].children.length; k++) { %>
-                            <details class="col-lg-12 card">
-                                <summary> <%= bom[i].children[j].children[k].name %> </summary>
-                                <div>
-                                    Itemname: <%= bom[i].children[j].children[k].name %> <br>
-                                    Item ID: <%= bom[i].children[j].children[k].id %> <br>
-                                    Produkttyp: <%= bom[i].children[j].children[k].produktTyp %> <br>
-                                    <% for (var l = 0; l < bom[i].children[j].children[k].children.length; l++) { %>
-                                        <details class="col-lg-12 card">
-                                            <summary> <%= bom[i].children[j].children[k].children[l].name %> </summary>
-                                            <div>
-                                                Itemname: <%= bom[i].children[j].children[k].children[l].name %> <br>
-                                                Item ID: <%= bom[i].children[j].children[k].children[l].id %> <br>
-                                                Produkttyp: <%= bom[i].children[j].children[k].children[l].produktTyp %> <br>
-                                            
-                                            
-                                            </div>
-                                        </details>    
-                                    <% } %>
-                                
-                                </div>
-                            </details>    
-                        <% } %>
-                    </div>
-                </details>    
-            <% } %>
+    <% for (var i = 0; i < bom.length; i++) { %>
+        <details open class="col-lg-8 card">
+            <summary> <%= bom[i].name %> </summary>
+            <div>
+                Itemname: <%= bom[i].name %><br>
+                Item ID: <%= bom[i].id %><br>
+                Produkttyp: <%= bom[i].produktTyp %><br>  
+                <% for (var j = 0; j < bom[i].children.length; j++) { %>
+                    <details open class="col-lg-12 card">
+                        <summary> <%= bom[i].children[j].name %> </summary>
+                        <div>
+                            Itemname: <%= bom[i].children[j].name %> <br>
+                            Item ID: <%= bom[i].children[j].id %><br>
+                            Produkttyp: <%= bom[i].children[j].produktTyp %><br>                            
+                            <% for (var k = 0; k < bom[i].children[j].children.length; k++) { %>
+                                <details open class="col-lg-12 card">
+                                    <summary> <%= bom[i].children[j].children[k].name %> </summary>
+                                    <div>
+                                        Itemname: <%= bom[i].children[j].children[k].name %> <br>
+                                        Item ID: <%= bom[i].children[j].children[k].id %> <br>
+                                        Produkttyp: <%= bom[i].children[j].children[k].produktTyp %> <br>
+                                        <% for (var l = 0; l < bom[i].children[j].children[k].children.length; l++) { %>
+                                            <details open class="col-lg-12 card">
+                                                <summary> <%= bom[i].children[j].children[k].children[l].name %> </summary>
+                                                <div>
+                                                    Itemname: <%= bom[i].children[j].children[k].children[l].name %> <br>
+                                                    Item ID: <%= bom[i].children[j].children[k].children[l].id %> <br>
+                                                    Produkttyp: <%= bom[i].children[j].children[k].children[l].produktTyp %> <br>
+                                                    
+                                                </div>
+                                            </details>    
+                                        <% } %>
+                                    
+                                    </div>
+                                </details>    
+                            <% } %>
+                        </div>
+                    </details>    
+                <% } %>
+            </div>
+        </details>    
+    <% } %>
+    <br>
+    <form action="http://localhost:3000/plmSystem/saveData" method="POST" class="card-body">                   
+        <div class="form-group">
+            <button type="submit" class="btn btn-primary">Produktstruktur speichern</button>
         </div>
-    </details>    
-<% } %>
+        <!-- <span class="UpvoteButton">Alert(0) aufrufen</span> -->
+    </form>
+    <div class = "row mx-auto" >
+        <details class="col-lg-4 card">
+            <summary> Item hinzufügen </summary>
+            <div class = "card" >
+                <form action="http://localhost:3000/plmSystem/addItem" method="POST" class="card-body">                   
+                    <div class="form-group">
+                        <label for="itemName" class="col-form-label">Neuer Itemname:</label>
+                        <input type="text" name="itemName" value="" placeholder="" id="itemName" autofocus="autofocus" class="form-control " required>
+                    </div>
+                    <div class="form-group">
+                        <label for="message-text" class="col-form-label">Neue Item ID:</label>
+                        <input type="text" name="itemId" value="MAT" placeholder="" id="itemId" autofocus="autofocus" class="form-control " required/>
+                    </div>
+                    <div class="form-group">
+                        <label for="message-text" class="col-form-label">Material ID (falls anders als ItemId):</label>
+                        <input type="text" name="materialId" value="MAT" placeholder="" id="materialId" autofocus="autofocus" class="form-control "/>
+                    </div>
+                    <div class="form-group">
+                        <label for="message-text" class="col-form-label">Produkttyp:</label>
+                        <select name = "produktTyp" id="produktTyp" class="form-control ">
+                                <option value = "Fertigerzeugnis"  >Fertigerzeugnis</option>
+                                <option value = "Halberzeugnis" >Halberzeugnis</option>
+                                <option value = "Rohmaterial" selected>Rohmaterial</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="parentID" class="col-form-label">Parent ID:</label>
+                        <input type="text" name="parentId" value="MAT" placeholder="" id="parentId" autofocus="autofocus" class="form-control " required/>
+                    </div>
+                    <div class="form-group">
+                        <button type="submit" class="btn btn-primary">Item hinzufügen</button>
+                    </div>
+                </form>
+            </div>
+        </details>  
+        <details class="col-lg-4 card hidden">
+            <summary> Item ändern </summary>
+            <div class = "card" >
+                <form action="http://localhost:3000/plmSystem/changeItem" method="POST" class="card-body">                   
+                    
+                    <div class="form-group">
+                        <label for="message-text" class="col-form-label">Alte Item ID:</label>
+                        <input type="text" name="itemId" value="MAT" placeholder="" id="itemId" autofocus="autofocus" class="form-control " required/>
+                    </div>
+                    <div class="form-group">
+                        <label for="parentID" class="col-form-label">Alte Parent ID (falls notwendig):</label>
+                        <input type="text" name="oldParentId" placeholder="" id="oldParentId" autofocus="autofocus" class="form-control "/>
+                    </div>
+                    <br>
+                    <div class="form-group">
+                        <label for="itemName" class="col-form-label">Neuer Itemname (falls zu ändern):</label>
+                        <input type="text" name="newItemName" placeholder="" id="newItemName" autofocus="autofocus" class="form-control ">
+                    </div>
+                    <div class="form-group">
+                        <label for="parentID" class="col-form-label">Neue Parent ID (falls zu ändern):</label>
+                        <input type="text" name="newParentId" placeholder="" id="newParentId" autofocus="autofocus" class="form-control "/>
+                    </div>
+                    <div class="form-group">
+                        <label for="parentID" class="col-form-label">Neue Item ID (falls zu ändern):</label>
+                        <input type="text" name="newItemId"  placeholder="" id="newItemId" autofocus="autofocus" class="form-control "/>
+                    </div>
+                    <div class="form-group">
+                        <label for="message-text" class="col-form-label">Neuer Produkttyp (falls zu ändern):</label>
+                        <select name = "newProduktTyp" id="newProduktTyp" class="form-control ">
+                            <option value = "" selected></option>    
+                            <option value = "Fertigerzeugnis" >Fertigerzeugnis</option>
+                            <option value = "Halberzeugnis" >Halberzeugnis</option>
+                            <option value = "Rohmaterial" >Rohmaterial</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <button type="submit" class="btn btn-danger">Item ändern</button>
+                    </div>
+                </form>
+            </div>
+        </details>    
+        <details class="col-lg-4 card">
+            <summary> Item löschen </summary>
+            <div class = "card" >
+                <form action="http://localhost:3000/plmSystem/removeItem" method="POST" class="card-body">                   
+                    
+                    <div class="form-group">
+                        <label for="message-text" class="col-form-label">Item ID:</label>
+                        <input type="text" name="itemId" value="MAT" placeholder="" id="itemId" autofocus="autofocus" class="form-control " required/>
+                    </div>
+                    <div class="form-group">
+                        <label for="parentID" class="col-form-label">Parent ID:</label>
+                        <input type="text" name="parentId" value="MAT" placeholder="" id="parentId" autofocus="autofocus" class="form-control " required/>
+                    </div>
+                    <div class="form-group">
+                        <button type="submit" class="btn btn-danger">Item entfernen</button>
+                    </div>
+                </form>
+            </div>
+        </details>   
+    </div>
+   
 </div>
