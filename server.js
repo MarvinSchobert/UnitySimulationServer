@@ -15,8 +15,8 @@ app.use(
   })
 );
 
-// const unityRouter = require("./api/routes/UnityService/unityServer");
-// app.use("/unityServer", unityRouter);
+const unityRouter = require("./api/routes/UnityService/unityServer");
+app.use("/unityServer", unityRouter);
 
 const simulationRouter = require("./api/routes/ProcessSimulation/simulationServer");
 app.use("/simulationServer", simulationRouter);

@@ -20,8 +20,7 @@ function initData (path, type){
         }
        else if (type == "stammdaten"){
         stammdaten = data;
-      }
-     
+       }
       }
       else {
         pushNewData(type)
