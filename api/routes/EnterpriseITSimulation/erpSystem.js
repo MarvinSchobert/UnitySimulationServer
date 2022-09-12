@@ -39,12 +39,12 @@ var auftraege = []; // enthält alle internen un externen Bestellungen mit Auswi
 //       itemId: String, // Stammdaten-ID des entsprechenden Materialstamms
 //       itemAnzahl: int, // Wie viel Material betrifft das?
 //       lagerortId: String, // welches Werk/ Lager betrifft das alles
+//       bestellDatum: String, // Wann wurde bestellt
+//       lieferDatumSoll: String, // Wann soll geliefert werden
+//       lieferDatumGeplant: String, // Wann ist das geplante Lieferdatum
+//       lieferDatumIst: String, // Wann wurde tatsächlich geliefert
 //       status: String[], // Stati können gepusht werden, letzterer ist der aktuellste
 // }
-
-
-
-
 
 initData("ERP_Inventory.json", "bestand");
 initData("ERP_StammdatenMaterialien.json", "materialStammdaten");
@@ -103,9 +103,9 @@ function pushNewData (type){
       { lagerortID: "REG01", lagerortBezeichnung: "Region Europa", lagerortTyp: ["Region"], lagerortParent: "", lagerortChildren: ["LAND01"] },
       { lagerortID: "LAND01", lagerortBezeichnung: "Deutschland", lagerortTyp: ["Land"], lagerortParent: "REG01", lagerortChildren: ["WERK01"] },
       { lagerortID: "WERK01", lagerortBezeichnung: "Werk Muenchen", lagerortTyp: ["Werk"], lagerortParent: "LAND01", lagerortChildren: ["LAG01", "LAG02", "LAG03"] },
-      { lagerortID: "LAG01", lagerortBezeichnung: "Eingangslager", lagerortTyp: ["Wareneingangslager"], lagerortParent: "WERK01", lagerortChildren: [] },
-      { lagerortID: "LAG02", lagerortBezeichnung: "Ausgangslager", lagerortTyp: ["Warenausgangslager", "Pufferlager"], lagerortParent: "WERK01", lagerortChildren: [] },
-      { lagerortID: "LAG03", lagerortBezeichnung: "Pufferlager", lagerortTyp: ["Pufferlager"], lagerortParent: "WERK01", lagerortChildren: [] },
+      { lagerortID: "LAG01", lagerortBezeichnung: "Eingangslager München", lagerortTyp: ["Wareneingangslager"], lagerortParent: "WERK01", lagerortChildren: [] },
+      { lagerortID: "LAG02", lagerortBezeichnung: "Ausgangslager München", lagerortTyp: ["Warenausgangslager", "Pufferlager"], lagerortParent: "WERK01", lagerortChildren: [] },
+      { lagerortID: "LAG03", lagerortBezeichnung: "Pufferlager München", lagerortTyp: ["Pufferlager"], lagerortParent: "WERK01", lagerortChildren: [] },
     );
   }
 }
@@ -211,6 +211,10 @@ router.route("/auftragHinzufuegen").post((req, res) => {
   var _itemId = req.body.itemId;
   var _itemAnzahl = req.body.itemAnzahl;
   var _lagerortId = req.body.lagerortId;
+  var _bestellDatum = req.body.bestellDatum;
+  var _lieferDatumSoll = req.body.lieferDatumSoll;
+  var _lieferDatumGeplant = req.body.lieferDatumGeplant;
+  var _lieferDatumIst = req.body.lieferDatumIst;
   var _status = [];
   var placeNew = true;
   for (var i = 0; i < auftraege.length; i++) {
@@ -223,7 +227,10 @@ router.route("/auftragHinzufuegen").post((req, res) => {
     var newAuftrag = {};
     newAuftrag.auftragsId = _auftragsId.toString();
     newAuftrag.auftragsTyp = _auftragsTyp.toString();
-    
+    newAuftrag.bestellDatum = _bestellDatum.toString();
+    newAuftrag.lieferDatumSoll = _lieferDatumSoll.toString();
+    // newAuftrag.lieferDatumGeplant = _lieferDatumGeplant.toString();
+
     newAuftrag.itemId = _itemId.toString();
     newAuftrag.kundenId = _kundenId.toString();
     newAuftrag.status = _status;
@@ -237,31 +244,17 @@ router.route("/auftragHinzufuegen").post((req, res) => {
 });
 
 router.route("/auftragBearbeiten").post((req, res) => {
-  var itemName = req.body.itemName;
-  var itemAnzahl = req.body.itemAnzahl;
-  var placeNew = true;
-  for (var i = 0; i < inventory.length; i++) {
-    if (inventory[i].itemName == itemName) {
-      inventory[i].itemAnzahl += parseInt(itemAnzahl);
-      placeNew = false;
-      break;
-    }
-  }
-  if (placeNew) {
-    var newItem = {};
-    newItem.itemName = itemName.toString();
-    newItem.itemAnzahl = parseInt(itemAnzahl);
-    inventory.push(newItem);
-  }
+  
   res.redirect("/erpSystem");
 });
 
 router.route("/wareVerbuchen").post((req, res) => {
   var itemName = req.body.itemName;
   var itemAnzahl = req.body.itemAnzahl;
+  var lagerortId = req.body.lagerortId;
   var placeNew = true;
   for (var i = 0; i < inventory.length; i++) {
-    if (inventory[i].itemName == itemName) {
+    if (inventory[i].itemName == itemName && inventory[i].lagerortId == lagerortId) {
       inventory[i].itemAnzahl += parseInt(itemAnzahl);
       placeNew = false;
       break;
@@ -271,11 +264,11 @@ router.route("/wareVerbuchen").post((req, res) => {
     var newItem = {};
     newItem.itemName = itemName.toString();
     newItem.itemAnzahl = parseInt(itemAnzahl);
+    newItem.lagerortId = lagerortId.toString();
     inventory.push(newItem);
   }
   res.redirect("/erpSystem");
 });
-
 
 router.route("/wareEntnehmen").post((req, res) => {
   var itemName = req.body.itemName;
@@ -283,7 +276,7 @@ router.route("/wareEntnehmen").post((req, res) => {
 
   if (verfügbarkeitPrüfen(itemName, itemAnzahl)) {
     for (var i = 0; i < inventory.length; i++) {
-      if (inventory[i].itemName == itemName) {
+      if (inventory[i].itemName == itemName && inventory[i].lagerortId == lagerortId) {
         inventory[i].itemAnzahl -= parseInt(itemAnzahl);
         if (inventory[i].itemAnzahl <= 0) {
           inventory.splice(i, 1);
@@ -293,6 +286,33 @@ router.route("/wareEntnehmen").post((req, res) => {
     }
   }
   res.redirect("/erpSystem");
+});
+
+// REST API GET REQUESTS:
+router.route("/inventory").get(async (req, res) => {
+  var result = inventory;
+  res.send(result);
+});
+
+router.route("/inventory/:LagerID").get(async (req, res) => {
+  var result = {};
+
+  for (var i = 0; i < inventory.length; i++){
+    if (inventory[i].lagerortId == req.params.LagerID){
+      result.push(inventory[i]);
+    }
+  }
+  res.send(result);
+});
+
+router.route("/materialstamm").get(async (req, res) => {
+  var result = materialStammdaten;
+  res.send(result);
+});
+
+router.route("/lagerortstamm").get(async (req, res) => {
+  var result = lagerortStammdaten;
+  res.send(result);
 });
 
 module.exports = router;

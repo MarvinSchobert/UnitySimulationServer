@@ -1,4 +1,9 @@
 <%- include('partials/header') %>
+<div class="row mx-auto">
+    <a href="http://localhost:3000/erpSystem/inventory">REST Inventory </a> | |
+    <a href="http://localhost:3000/erpSystem/materialstamm">REST Materialstammdaten </a> | |
+    <a href="http://localhost:3000/erpSystem/lagerortstamm">REST Lagerortstammdaten </a>
+</div>
 <details class="card">
     <summary> Waren inspizieren und bearbeiten</summary>
 <div class="col mx-auto">
@@ -36,9 +41,15 @@
                     <% } %>
                 </select></div>
                 <div class="form-group">
-                    <input type="number" name="itemAnzahl" value="" placeholder=0 id="itemAnzahl" autofocus="autofocus" class="form-control " required/>
-                    
-                </div>            
+                    <input type="number" name="itemAnzahl" value="" placeholder="itemAnzahl" id="itemAnzahl" autofocus="autofocus" class="form-control " required/>                    
+                </div>    
+                <div class="form-group">
+                    <select name = "lagerortId" id="lagerortId" class="form-control ">
+                        <% for (var i = 0; i < lagerortStammdaten.length; i++){ %>
+                            <option value = "<%= lagerortStammdaten[i].lagerortID %>" selected ><%= lagerortStammdaten[i].lagerortBezeichnung + " ("+ lagerortStammdaten[i].lagerortID + ")" %> </option>                           
+                        <% } %>
+                    </select>                    
+                </div>          
                 <div class="form-group">
                     <button type="submit" class="btn btn-primary">Ware hinzufügen</button>
                 </div>
@@ -62,8 +73,15 @@
                         </select>
                     </div>
                     <div class="form-group">
-                        <input type="number" name="itemAnzahl" value="" placeholder=0 id="itemAnzahl" autofocus="autofocus" class="form-control " required />
+                        <input type="number" name="itemAnzahl" value="" placeholder="itemAnzahl" id="itemAnzahl" autofocus="autofocus" class="form-control " required />
                     </div>
+                    <div class="form-group">
+                        <select name = "lagerortId" id="lagerortId" class="form-control ">
+                            <% for (var i = 0; i < lagerortStammdaten.length; i++){ %>
+                                <option value = "<%= lagerortStammdaten[i].lagerortID %>" selected ><%= lagerortStammdaten[i].lagerortBezeichnung + " ("+ lagerortStammdaten[i].lagerortID + ")" %> </option>                           
+                            <% } %>
+                        </select>                    
+                    </div>  
                     <div class="form-group">
                         <button type="submit" class="btn btn-secondary">Ware entnehmen</button>
                     </div>
@@ -83,10 +101,10 @@
                     </select>
                 </div>
                 <div class="form-group">
-                    <input type="text" name="itemName" value="" placeholder="" id="itemName" autofocus="autofocus" class="form-control " required/>
+                    <input type="text" name="itemName" value="" placeholder="itemName" id="itemName" autofocus="autofocus" class="form-control " required/>
                 </div>      
                 <div class="form-group">
-                    <input type="text" name="itemId" value="MAT" placeholder="" id="itemId" autofocus="autofocus" class="form-control " required/>
+                    <input type="text" name="itemId" value="MAT" placeholder="itemId" id="itemId" autofocus="autofocus" class="form-control " required/>
                 </div>           
                 <div class="form-group">
                     <button type="submit" class="btn btn-secondary">Materialart hinzufügen</button>
@@ -96,11 +114,9 @@
     </details>
 </div>
 <div class="row mx-auto">    
-    <details open class="col-lg-4 card">
+    <details class="col-lg-4 card">
         <summary> Auftrag erstellen </summary>
-        <div >
-            
-        
+        <div>
             <form action="http://localhost:3000/erpSystem/auftragHinzufuegen" method="POST" class="card-body">   
                 <div class="form-group">
                     <select name = "auftragsTyp" id="auftragsTyp" class="form-control">                
@@ -110,16 +126,33 @@
                     </select>
                 </div>
                 <div class="form-group">
-                    <input type="text" name="auftragsId" value="" placeholder="" id="auftragsId" autofocus="autofocus" class="form-control " required/>
+                    <input type="text" name="auftragsId" value="bestellung1234" placeholder="auftragsId" id="auftragsId" autofocus="autofocus" class="form-control " required/>
                 </div>
                 <div class="form-group">
-                    <input type="text" name="kundenId" value="" placeholder="" id="kundenId" autofocus="autofocus" class="form-control " required/>
-                </div>                
+                    <input type="text" name="kundenId" value="KUN1234" placeholder="kundenId" id="kundenId" autofocus="autofocus" class="form-control " required/>
+                </div>    
+                <div class="form-group">    
+                    <select name = "itemId" id="itemId" class="form-control">                
+                        <% for (var i = 0; i < materialStammdaten.length; i++){ %>
+                            <option value = "<%= materialStammdaten[i].itemId %>" selected>  <%= materialStammdaten[i].itemName %> (<%= materialStammdaten[i].itemId %>)</option>
+                        <% } %>
+                    </select>
+                </div>        
                 <div class="form-group">
-                    <input type="number" name="itemAnzahl" value="" placeholder=0 id="itemAnzahl" autofocus="autofocus" class="form-control " required/>                    
+                    <input type="number" name="itemAnzahl" value=5 placeholder="itemAnzahl" id="itemAnzahl" autofocus="autofocus" class="form-control " required/>                    
                 </div>   
                 <div class="form-group">
-                    <input type="text" name="lagerortId" value="" placeholder="" id="lagerortId" autofocus="autofocus" class="form-control " required/>
+                    <input type="date" name="bestellDatum" value="2022-09-03" placeholder="bestellDatum" id="bestellDatum" autofocus="autofocus" class="form-control " required/>                    
+                </div>
+                <div class="form-group">
+                    <input type="date" name="lieferDatumSoll" value="2022-09-03" placeholder="bestellDlieferDatumSollatum" id="lieferDatumSoll" autofocus="autofocus" class="form-control " required/>                    
+                </div>
+                <div class="form-group">
+                    <select name = "lagerortId" id="lagerortId" class="form-control ">
+                        <% for (var i = 0; i < lagerortStammdaten.length; i++){ %>
+                            <option value = "<%= lagerortStammdaten[i].lagerortID %>" selected ><%= lagerortStammdaten[i].lagerortBezeichnung + " ("+ lagerortStammdaten[i].lagerortID + ")" %> </option>                           
+                        <% } %>
+                    </select>                    
                 </div>         
                 <div class="form-group">
                     <button type="submit" class="btn btn-primary">Auftrag hinzufügen</button>
@@ -143,17 +176,47 @@
     </div>
     <!-- <span class="UpvoteButton">Alert(0) aufrufen</span> -->
 </form>
-<div class="col-lg-4">
-<table border="1">
-    <tr>
-        <th width=500 style="background-color:#1c87c9;">Itemname</th>
-        <th width=100 style="background-color:#1c87c9;">Anzahl</th>
-    </tr>
-    <% for (var i = 0; i < inventory.length; i++) { %>
-        <tr>
-            <th width=500 > <%= inventory[i].itemName.toString() %> </th>
-            <th width=100 > <%= inventory[i].itemAnzahl.toString() %> </th>
-        </tr>
-    <% } %>
-</table>
+<div class="row mx-auto py-1">    
+    <div class="col">
+        <h5>Materialbestände</h5>
+        <table border="1">
+            <tr>
+                <th width=500 style="background-color:#4e9bcb;">Itemname</th>
+                <th width=200 style="background-color:#4e9bcb;">Anzahl</th>
+            </tr>
+            <% for (var i = 0; i < inventory.length; i++) { %>
+                <tr>
+                    <th width=500 > <%= inventory[i].itemName.toString() %> </th>
+                    <th width=200 > <%= inventory[i].itemAnzahl.toString() %> </th>
+                </tr>
+            <% } %>
+        </table>
+    </div>    
+    <div class="col">
+        <h5>Aufträge</h5>
+        <table border="1">
+            <tr>
+                <th width=200 style="background-color:#53c77f;">AuftragsID</th>
+                <th width=300 style="background-color:#53c77f;">Kunde</th>
+                <th width=300 style="background-color:#53c77f;">Auftragstyp</th>
+                <th width=300 style="background-color:#53c77f;">Bestelldatum</th>
+                <th width=300 style="background-color:#53c77f;">Soll-Lieferdatum</th>
+                <th width=300 style="background-color:#53c77f;">Produkt</th>
+                <th width=200 style="background-color:#53c77f;">Anzahl</th>
+                <th width=300 style="background-color:#53c77f;">Ort</th>
+            </tr>
+            <% for (var i = 0; i < auftraege.length; i++) { %>
+                <tr>
+                    <th width=400 > <%= auftraege[i].auftragsId.toString() %> </th>
+                    <th width=300 > <%= auftraege[i].kundenId.toString() %> </th>
+                    <th width=300 > <%= auftraege[i].auftragsTyp.toString() %> </th>
+                    <th width=200 > <%= auftraege[i].bestellDatum.toString() %> </th>
+                    <th width=200 > <%= auftraege[i].lieferDatumSoll.toString() %> </th>
+                    <th width=300 > <%= auftraege[i].itemId.toString() %> </th>
+                    <th width=200 > <%= auftraege[i].itemAnzahl.toString() %> </th>
+                    <th width=300 > <%= auftraege[i].lagerortId.toString() %> </th>
+                </tr>
+            <% } %>
+        </table>
+    </div>
 </div>
