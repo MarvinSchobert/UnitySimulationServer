@@ -2,14 +2,16 @@ const router = require("express").Router();
 const fs = require('fs');
 
 var ebomData = [];
-//
-//
-//
-//
-//
-//
-//
-//
+// ein Objekt:
+// {
+//       auftragsId: String, // eine eindeutige ID
+//       auftragsTyp: String, // der Auftragstyp, bspw. "Bestellung", "umlagerung", "Produktionsauftrag"
+//       itemId: String, // Stammdaten-ID des entsprechenden Materialstamms
+//       itemAnzahl: int, // Wie viel Material betrifft das?
+//       lagerortId: String, // welches Lager betrifft das alles
+// }
+
+
 initData("EBOM.json");
 // Es wird ebomData aus der Datenbank gelesen, wenn Einträge vorhanden sind, diese nehmen, ansonsten generischen Inhalt einfüllen
 function initData (path){  

@@ -8,11 +8,11 @@
             <th width=100 style="background-color:#1c87c9;">Item ID</th>
             <th width=300 style="background-color:#1c87c9;">Produkttyp</th>
         </tr>
-    <% for (var i = 0; i < stammdaten.length; i++){ %>
+    <% for (var i = 0; i < materialStammdaten.length; i++){ %>
         <tr>
-        <th width=500 ><%= stammdaten[i].itemName %></th>
-            <th width=100><%= stammdaten[i].itemId %> </th>
-            <th width=300><%= stammdaten[i].produktTyp %></th>
+        <th width=500 ><%= materialStammdaten[i].itemName %></th>
+            <th width=100><%= materialStammdaten[i].itemId %> </th>
+            <th width=300><%= materialStammdaten[i].produktTyp %></th>
         </tr>
     <% } %>   
     </table>
@@ -24,15 +24,15 @@
         <summary> Waren verbuchen </summary>
         <div >
             
-            <% if (stammdaten.length == 0) { %>
+            <% if (materialStammdaten.length == 0) { %>
                 Noch keine Materialstammdaten verfügbar.
             <% } else { %> 
         
             <form action="http://localhost:3000/erpSystem/wareVerbuchen" method="POST" class="card-body">   
                 <div class="form-group">
                 <select name = "itemName" id="itemName" class="form-control">                
-                    <% for (var i = 0; i < stammdaten.length; i++){ %>
-                        <option value = "<%= stammdaten[i].itemName %>" selected>  <%= stammdaten[i].itemName %> (<%= stammdaten[i].itemId %>)</option>
+                    <% for (var i = 0; i < materialStammdaten.length; i++){ %>
+                        <option value = "<%= materialStammdaten[i].itemName %>" selected>  <%= materialStammdaten[i].itemName %> (<%= materialStammdaten[i].itemId %>)</option>
                     <% } %>
                 </select></div>
                 <div class="form-group">
@@ -50,14 +50,14 @@
     <details open class="col-lg-4 card">
         <summary> Waren entnehmen </summary>
         <div>
-            <% if (stammdaten.length == 0) { %>
+            <% if (materialStammdaten.length == 0) { %>
                 Noch keine Materialstammdaten verfügbar.
             <% } else { %>
                 <form action="http://localhost:3000/erpSystem/wareEntnehmen" method="POST" class="card-body">
                     <div class="form-group">
                         <select name = "itemName" id="itemName" class="form-control ">
-                            <% for (var i = 0; i < stammdaten.length; i++){ %>
-                                <option value = "<%= stammdaten[i].itemName %>" selected ><%= stammdaten[i].itemName %> </option>
+                            <% for (var i = 0; i < materialStammdaten.length; i++){ %>
+                                <option value = "<%= materialStammdaten[i].itemName %>" selected ><%= materialStammdaten[i].itemName %> </option>
                             <% } %>
                         </select>
                     </div>
@@ -93,6 +93,40 @@
                 </div>
             </form>
         </div> 
+    </details>
+</div>
+<div class="row mx-auto">    
+    <details open class="col-lg-4 card">
+        <summary> Auftrag erstellen </summary>
+        <div >
+            
+        
+            <form action="http://localhost:3000/erpSystem/auftragHinzufuegen" method="POST" class="card-body">   
+                <div class="form-group">
+                    <select name = "auftragsTyp" id="auftragsTyp" class="form-control">                
+                        <option value = "Bestellung" selected >Bestellung</option>
+                        <option value = "Umlagerung" >Umlagerung</option>
+                        <option value = "Produktionsauftrag" >Produktionsauftrag</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <input type="text" name="auftragsId" value="" placeholder="" id="auftragsId" autofocus="autofocus" class="form-control " required/>
+                </div>
+                <div class="form-group">
+                    <input type="text" name="kundenId" value="" placeholder="" id="kundenId" autofocus="autofocus" class="form-control " required/>
+                </div>                
+                <div class="form-group">
+                    <input type="number" name="itemAnzahl" value="" placeholder=0 id="itemAnzahl" autofocus="autofocus" class="form-control " required/>                    
+                </div>   
+                <div class="form-group">
+                    <input type="text" name="lagerortId" value="" placeholder="" id="lagerortId" autofocus="autofocus" class="form-control " required/>
+                </div>         
+                <div class="form-group">
+                    <button type="submit" class="btn btn-primary">Auftrag hinzufügen</button>
+                </div>
+                <!-- <span class="UpvoteButton">Alert(0) aufrufen</span> -->
+            </form>           
+        </div>   
     </details>
 </div>
 <script>

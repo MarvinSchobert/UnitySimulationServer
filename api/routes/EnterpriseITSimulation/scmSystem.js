@@ -1,12 +1,34 @@
 const router = require("express").Router();
 const fs = require('fs');
 
-var stammdaten = [];
+var materialStammdaten = [];
+// ein Objekt: // IDs und Namen sind analog zum Materialstammdatensatz aus dem ERP-System
+// {
+//       itemId: String, // eine eindeutige ID
+//       itemName: String, // Freitext, wie das Material heißt
+// }
+
 
 var lieferantenData = [];
+// ein Objekt:
+// {
+//       name: String, // Name des Lieferanten (ein Lieferant kann auch mehrmals eingetragen sein mit unterschiedlichen Materialien oder Konditionen)
+//       lieferMatName: String, // Name seines lieferbaren Materials
+//       lieferMatId: String, // Stammdaten-ID des entsprechenden Materialstamms welches er liefert
+//       lieferKonditionen: 
+//          { 
+//            stk: int // Ab so einer Liefermenge...
+//            preisProStk: double // So einen Preis pro Stück
+//            einheit: string // Preis in <einheit> (z. B. EUR)
+//          }, 
+//       lieferdauerTage: int, // wie viele Tage Planlieferzeit
+// }
+
 
 initData("SCM_Suppliers.json", "lieferanten");
-initData("SCM_Stammdaten.json", "stammdaten");
+initData("SCM_Stammdaten.json", "materialStammdaten");
+
+// Quasi das Äquivalent zu CRM, dieser Service könnte auch SRM heißen.
 // Es wird ebomData aus der Datenbank gelesen, wenn Einträge vorhanden sind, diese nehmen, ansonsten generischen Inhalt einfüllen
 function initData (path, type){  
   try {
@@ -18,8 +40,8 @@ function initData (path, type){
         if (type == "lieferanten"){
           lieferantenData = data;
         }
-       else if (type == "stammdaten"){
-        stammdaten = data;
+       else if (type == "materialStammdaten"){
+        materialStammdaten = data;
        }
       }
       else {
@@ -35,8 +57,8 @@ function initData (path, type){
 }
 
 function pushNewData (type){
-  if (type == "stammdaten"){
-    stammdaten.push(
+  if (type == "materialStammdaten"){
+    materialStammdaten.push(
       { itemId: "MAT01", itemName: "Fahrrad" },
       { itemId: "MAT02", itemName: "ZSB_Rahmen" },
       { itemId: "MAT03", itemName: "Rahmen" },
@@ -122,7 +144,7 @@ router.route("/saveData").post((req, res) => {
   try {
     fs.writeFileSync("SCM_Suppliers.json", JSON.stringify(lieferantenData));
     console.log("ERP.json has been saved with the user data");
-    fs.writeFileSync("SCM_Stammdaten.json", JSON.stringify(stammdaten));
+    fs.writeFileSync("SCM_Stammdaten.json", JSON.stringify(materialStammdaten));
     console.log("ERP.json has been saved with the user data");
   } catch (err) {
     console.error(err);
