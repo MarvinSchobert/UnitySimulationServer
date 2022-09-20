@@ -181,13 +181,15 @@
         <h5>Materialbestände</h5>
         <table border="1">
             <tr>
+                <th width=100 style="background-color:#4e9bcb;">Lagerort</th>
                 <th width=500 style="background-color:#4e9bcb;">Itemname</th>
-                <th width=200 style="background-color:#4e9bcb;">Anzahl</th>
+                <th width=100 style="background-color:#4e9bcb;">Anzahl</th>
             </tr>
             <% for (var i = 0; i < inventory.length; i++) { %>
                 <tr>
+                    <th width=100 > <%= inventory[i].lagerortId.toString() %> </th>
                     <th width=500 > <%= inventory[i].itemName.toString() %> </th>
-                    <th width=200 > <%= inventory[i].itemAnzahl.toString() %> </th>
+                    <th width=100 > <%= inventory[i].itemAnzahl.toString() %> </th>
                 </tr>
             <% } %>
         </table>

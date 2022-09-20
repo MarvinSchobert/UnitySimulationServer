@@ -22,15 +22,25 @@ const bestellungAufgeben = async () => {
 	await producer.connect()
   try {
     id= "bestellung"+Math.floor(Math.random() * 10000);
-    produktbezeichnung = "Computer"
+    produktbezeichnung = "Fahrrad"
     menge = 1
+    kunde = ""
+    lieferAdresse = ""
+    lieferDatumSoll = ""
 
     await producer.send({
       topic: "messageorder",
       messages: [
         {
           key: "Nachricht",
-          value: JSON.stringify({"eventKey":"abc" , "produktbezeichnung": produktbezeichnung, "menge": menge, "id": id}),
+          value: JSON.stringify(
+              {"kunde": kunde, 
+              "lieferAdresse": lieferAdresse, 
+              "lieferDatumSoll": lieferDatumSoll, 
+              "produktbezeichnung": produktbezeichnung, 
+              "menge": menge, 
+              "id": id}
+            ),
         },
       ],
     })
@@ -57,11 +67,11 @@ const bestellungAufgeben = async () => {
 }
 
 
-const produce = async (data, parameter) => {
+const produce = async (topic, data, parameter) => {
 	await producer.connect()
   try {
     await producer.send({
-      topic: "messageservices",
+      topic: topic,
       messages: [
         {
           key: "Nachricht",
@@ -76,7 +86,7 @@ const produce = async (data, parameter) => {
 }
 
 var tasks = [];
-var workers = []; // 
+var Resources = []; // 
 var log = [];
 var auftraege = [];
 
@@ -101,37 +111,69 @@ const consume = async () => {
       task.type = simulationReq;
       task.storeText = "Nr. " + request.id +": " + simulationReq;
       task.remainingTime = request.bearbeitungsdauerSekunden * 1000 // Millisekunden
-
-      // Innendienst
+      
+      // Vertrieb
       if (simulationReq == "bestellungSichten"){       
-        task.verantwortung = "Innendienst"
+        task.verantwortung = "Vertrieb"
         if (rnd <30) res = 1;   
         if (rnd > 55) res = 2;  
       }
+      else if (simulationReq == "kundePruefen"){        
+        task.verantwortung = "Vertrieb"
+        if (rnd <60) res = 1;      
+      }
+      else if (simulationReq == "kundeInCRMSystemAufnehmen"){        
+        task.verantwortung = "Vertrieb"
+        if (rnd <60) res = 1;      
+      }
       else if (simulationReq == "bestellungKlaeren"){        
-        task.verantwortung = "Innendienst"
+        task.verantwortung = "Vertrieb"
+        if (rnd <60) res = 1;      
+      }
+      else if (simulationReq == "auftragInERPSystemEintragen"){        
+        task.verantwortung = "Vertrieb"
+        if (rnd <60) res = 1;      
+      }
+      else if (simulationReq == "auftragAusERPLoeschen"){        
+        task.verantwortung = "Vertrieb"
         if (rnd <60) res = 1;      
       }
       else if (simulationReq == "bestellungDigitalisieren"){
-        task.verantwortung = "Innendienst"               
+        task.verantwortung = "Vertrieb"               
         if (rnd <50) res = 1;  
       }
       else if (simulationReq == "datenPruefen"){
-        task.verantwortung = "Innendienst"
+        task.verantwortung = "Vertrieb"
         if (rnd <50) res = 1;    
       }
       else if (simulationReq == "mitKundeKlaeren"){
-        task.verantwortung = "Innendienst"
+        task.verantwortung = "Vertrieb"
+        if (rnd <50) res = 1;    
+      }
+      else if (simulationReq == "auftragsbestaetigungSenden"){
+        task.verantwortung = "Vertrieb"
+        if (rnd <50) res = 1;    
+      }
+      else if (simulationReq == "auftragsbestaetigungErstellen"){
+        task.verantwortung = "Vertrieb"
+        if (rnd <50) res = 1;    
+      }      
+      else if (simulationReq == "produktionsbedarfErstellen"){
+        task.verantwortung = "Vertrieb"
         if (rnd <50) res = 1;    
       }
       else if (simulationReq == "rechnungStellen"){
-        task.verantwortung = "Innendienst"
+        task.verantwortung = "Vertrieb"
         gesamtEinnahmen += 250;        
         if (rnd <50) res = 1;    
       }
 
       // Produktionsplanung
       else if (simulationReq == "auftragPruefen"){
+        task.verantwortung = "Produktionsplanung"
+        if (rnd <50) res = 1;    
+      }
+      else if (simulationReq == "bedarfPruefen"){
         task.verantwortung = "Produktionsplanung"
         if (rnd <50) res = 1;    
       }
@@ -155,9 +197,27 @@ const consume = async () => {
         task.canComplete = false;
         if (rnd <50) res = 1;      
       }
+      else if (simulationReq == "bedarfNachbearbeiten"){
+        task.verantwortung = "Produktionsplanung"
+        if (rnd <40) res = 1;      
+        else if (rnd <70) res = 2;  
+      }
       else if (simulationReq == "rohmaterialVerfuegbarkeitPruefen"){
         task.verantwortung = "Produktionsplanung"
         task.canComplete = false;
+        if (rnd <50) res = 1;      
+      }
+      else if (simulationReq == "problemBeschreiben"){
+        task.verantwortung = "Produktionsplanung"
+        if (rnd <50) res = 1;      
+      }
+      else if (simulationReq == "produktionsauftragErstellen"){
+        task.verantwortung = "Produktionsplanung"
+        if (rnd <40) res = 1;      
+        else if (rnd <70) res = 2;  
+      }
+      else if (simulationReq == "materialbedarfErstellen"){
+        task.verantwortung = "Produktionsplanung"
         if (rnd <50) res = 1;      
       }
       else if (simulationReq == "materialbedarfUebermitteln"){
@@ -165,17 +225,39 @@ const consume = async () => {
         if (rnd <50) res = 1;      
       }
 
-      // Supply Chain Management
+      // Einkauf
       else if (simulationReq == "materialbedarfPruefen"){
-        task.verantwortung = "SupplyChainManagement"
+        task.verantwortung = "Einkauf"
         if (rnd <50) res = 1;    
       }
       else if (simulationReq == "lieferantenAussuchen"){
-        task.verantwortung = "SupplyChainManagement"
+        task.verantwortung = "Einkauf"
         if (rnd <50) res = 1;    
       }
       else if (simulationReq == "materialBestellen"){
-        task.verantwortung = "SupplyChainManagement"
+        task.verantwortung = "Einkauf"
+        if (rnd <50) res = 1;    
+      }
+      else if (simulationReq == "lieferantAnfragenUndPruefen"){
+        task.verantwortung = "Einkauf"
+        if (rnd <50) res = 1;    
+      }
+      else if (simulationReq == "vermerkImSCMSystemVornehmen"){
+        task.verantwortung = "Einkauf"
+        if (rnd <50) res = 1;    
+      }
+      else if (simulationReq == "problemBeschreiben"){
+        task.verantwortung = "Einkauf"
+        if (rnd <50) res = 1;      
+      }
+
+       // Finanzwesen
+       else if (simulationReq == "rechnungErstellen"){
+        task.verantwortung = "Finanz"
+        if (rnd <50) res = 1;    
+      }
+      else if (simulationReq == "gewinnVerbuchen"){
+        task.verantwortung = "Finanz"
         if (rnd <50) res = 1;    
       }
 
@@ -189,6 +271,10 @@ const consume = async () => {
         if (rnd <50) res = 1;    
       }
       else if (simulationReq == "lieferungEinlagern"){
+        task.verantwortung = "Logistik"
+        if (rnd <50) res = 1;    
+      }
+      else if (simulationReq == "auftragEintragen"){
         task.verantwortung = "Logistik"
         if (rnd <50) res = 1;    
       }
@@ -228,7 +314,10 @@ const consume = async () => {
      
      
       
-
+      if (request.verantwortung != null && request.verantwortung != "")
+      {
+        task.verantwortung = request.verantwortung
+      }
 
       task.res = res
       task.abgeschlossen = false
@@ -263,79 +352,78 @@ async function routine (){
   simDifference = startSimTime - d
   var skip = false
 
-  const names = ["Andrew Aguilar", "Ryan Schwartz", "Joshua Gonzalez", "Justin Butler", "Brandon Garcia", "John Torres", "Roberto Brown", "Travis Hill", "Alexander Brown"]
-  // Init two Innendienst Workers
-  for (var i = 0; i < 1; i++){
-    var worker = {}
-    worker.aktuelleAufgabe = -1
-    worker.verantwortung = "Innendienst"
-    worker.tasks = []
-    worker.name = names [Math.floor(Math.random() * names.length)]
-    worker.gehaltprojahr = 65000
-    worker.arbeitszeitprojahr_minuten = 90000
-    workers.push(worker)    
-  }
+  const firstnames = ["Andrew", "Ryan", "Joshua", "Justin", "Brandon", "John", "Roberto", "Travis", "Alexander", "Andreas", "Frank", "Martin"]
+  const lastnames = [ "Aguilar", "Schwartz" ,"Gonzalez","Butler","Garcia","Torres","Brown","Hill","Brown","Spector","Brandt", "Müller", "Schubert"]
 
-  // Init one Produktionsplanungs Worker
   for (var i = 0; i < 1; i++){
-    var worker = {}
-    worker.aktuelleAufgabe = -1
-    worker.verantwortung = "Produktionsplanung"
-    worker.tasks = []
-    worker.name = names [Math.floor(Math.random() * names.length)]
-    worker.gehaltprojahr = 80000
-    worker.arbeitszeitprojahr_minuten = 90000
-    workers.push(worker)    
+    var resource = {}
+    resource.aktuelleAufgabe = -1
+    resource.verantwortung = "Vertrieb"
+    resource.tasks = []
+    resource.name = firstnames [Math.floor(Math.random() * firstnames.length)] + " " + lastnames [Math.floor(Math.random() * lastnames.length)]
+    resource.gehaltprojahr = 65000
+    resource.arbeitszeitprojahr_minuten = 90000
+    Resources.push(resource)    
   }
   for (var i = 0; i < 1; i++){
-    var worker = {}
-    worker.aktuelleAufgabe = -1
-    worker.verantwortung = "Logistik"
-    worker.tasks = []
-    worker.name = names [Math.floor(Math.random() * names.length)]
-    worker.gehaltprojahr = 45000
-    worker.arbeitszeitprojahr_minuten = 100000
-    workers.push(worker)    
+    var resource = {}
+    resource.aktuelleAufgabe = -1
+    resource.verantwortung = "Produktionsplanung"
+    resource.tasks = []
+    resource.name = firstnames [Math.floor(Math.random() * firstnames.length)] + " " + lastnames [Math.floor(Math.random() * lastnames.length)]
+    resource.gehaltprojahr = 80000
+    resource.arbeitszeitprojahr_minuten = 90000
+    Resources.push(resource)    
   }
   for (var i = 0; i < 1; i++){
-    var worker = {}
-    worker.aktuelleAufgabe = -1
-    worker.verantwortung = "Produktionsmitarbeiter"
-    worker.tasks = []
-    worker.name = names [Math.floor(Math.random() * names.length)]
-    worker.gehaltprojahr = 45000
-    worker.arbeitszeitprojahr_minuten = 100000
-    workers.push(worker)    
+    var resource = {}
+    resource.aktuelleAufgabe = -1
+    resource.verantwortung = "Logistik"
+    resource.tasks = []
+    resource.name = firstnames [Math.floor(Math.random() * firstnames.length)] + " " + lastnames [Math.floor(Math.random() * lastnames.length)]
+    resource.gehaltprojahr = 45000
+    resource.arbeitszeitprojahr_minuten = 100000
+    Resources.push(resource)    
   }
   for (var i = 0; i < 1; i++){
-    var worker = {}
-    worker.aktuelleAufgabe = -1
-    worker.verantwortung = "SupplyChainManagement"
-    worker.tasks = []
-    worker.name = names [Math.floor(Math.random() * names.length)]
-    worker.gehaltprojahr = 80000
-    worker.arbeitszeitprojahr_minuten = 90000
-    workers.push(worker)    
+    var resource = {}
+    resource.aktuelleAufgabe = -1
+    resource.verantwortung = "Produktionsmitarbeiter"
+    resource.tasks = []
+    resource.name = firstnames [Math.floor(Math.random() * firstnames.length)] + " " + lastnames [Math.floor(Math.random() * lastnames.length)]
+    resource.gehaltprojahr = 45000
+    resource.arbeitszeitprojahr_minuten = 100000
+    Resources.push(resource)    
   }
   for (var i = 0; i < 1; i++){
-    var worker = {}
-    worker.aktuelleAufgabe = -1
-    worker.verantwortung = "Maschine"
-    worker.tasks = []
-    worker.name = names [Math.floor(Math.random() * names.length)]
-    worker.gehaltprojahr = 20000
-    worker.arbeitszeitprojahr_minuten = 525600
-    workers.push(worker)    
+    var resource = {}
+    resource.aktuelleAufgabe = -1
+    resource.verantwortung = "Einkauf"
+    resource.tasks = []
+    resource.name = firstnames [Math.floor(Math.random() * firstnames.length)] + " " + lastnames [Math.floor(Math.random() * lastnames.length)]
+    resource.gehaltprojahr = 80000
+    resource.arbeitszeitprojahr_minuten = 90000
+    Resources.push(resource)    
   }
   for (var i = 0; i < 1; i++){
-    var worker = {}
-    worker.aktuelleAufgabe = -1
-    worker.verantwortung = "Förderband"
-    worker.tasks = []
-    worker.name = names [Math.floor(Math.random() * names.length)]
-    worker.gehaltprojahr = 5000
-    worker.arbeitszeitprojahr_minuten = 525600
-    workers.push(worker)    
+    var resource = {}
+    resource.aktuelleAufgabe = -1
+    resource.verantwortung = "Maschine"
+    resource.tasks = []
+    resource.name = "Maschine " + i;
+    resource.gehaltprojahr = 20000
+    resource.arbeitszeitprojahr_minuten = 525600
+    Resources.push(resource)    
+  }
+  for (var i = 0; i < 1; i++){
+    var resource = {}
+    resource.aktuelleAufgabe = -1
+    resource.verantwortung = "Förderband"
+    resource.tasks = []
+    resource.name = "Förderband " + i;
+    resource.gehaltprojahr = 5000
+    resource.arbeitszeitprojahr_minuten = 525600
+    Resources.push(resource)    
   }
 
   while (!restartSim){
@@ -346,14 +434,14 @@ async function routine (){
       bestellungenQueue--;
     }
     var simActive = false;
-    workers.forEach( (worker) => {
+    Resources.forEach( (resource) => {
       // Neuen Task nehmen
-      if (worker.aktuelleAufgabe == -1){
+      if (resource.aktuelleAufgabe == -1){
         for (var j = 0; j < tasks.length; j++){
-          if (!tasks[j].abgeschlossen && tasks[j].aktuellBearbeitet == false && worker.verantwortung == tasks[j].verantwortung)
+          if (!tasks[j].abgeschlossen && tasks[j].aktuellBearbeitet == false && resource.verantwortung == tasks[j].verantwortung)
           {
             // Auswahl überlegen bzgl. Umrüstzeit etc.
-            if (worker.tasks.length != 0 && tasks[j].request.simulationRequest != tasks[ worker.tasks[worker.tasks.length-1]].request.simulationRequest){
+            if (resource.tasks.length != 0 && tasks[j].request.simulationRequest != tasks[ resource.tasks[resource.tasks.length-1]].request.simulationRequest){
               // Sozusagen Umrüstzeit bei der Aufgabenbearbeitung
               tasks[j].remainingTime = Math.floor(tasks[j].remainingTime*1)
             }
@@ -362,24 +450,24 @@ async function routine (){
             store (tasks[j].request.id, tasks[j].storeText + " begonnen", true)
             tasks[j].aktuellBearbeitet = true
             tasks[j].startTime = adjustToSimTime(timeCounter)
-            tasks[j].bearbeiter = worker.name
-            worker.aktuelleAufgabe = j
-            worker.tasks.push (j)
+            tasks[j].bearbeiter = resource.name
+            resource.aktuelleAufgabe = j
+            resource.tasks.push (j)
             simActive = true;
-            if (tasks[worker.aktuelleAufgabe].request.simulationRequest == "verfuegbarkeitPruefen"){
-              verfuegbarkeitPruefen(j, auftraege[tasks[worker.aktuelleAufgabe].auftrag]);
+            if (tasks[resource.aktuelleAufgabe].request.simulationRequest == "verfuegbarkeitPruefen"){
+              verfuegbarkeitPruefen(j, auftraege[tasks[resource.aktuelleAufgabe].auftrag]);
             }
-            else if (tasks[worker.aktuelleAufgabe].request.simulationRequest == "rohmaterialVerfuegbarkeitPruefen"){
-              rohmaterialVerfuegbarkeitPruefen(j, auftraege[tasks[worker.aktuelleAufgabe].auftrag]);
+            else if (tasks[resource.aktuelleAufgabe].request.simulationRequest == "rohmaterialVerfuegbarkeitPruefen"){
+              rohmaterialVerfuegbarkeitPruefen(j, auftraege[tasks[resource.aktuelleAufgabe].auftrag]);
             }
-            else if (tasks[worker.aktuelleAufgabe].request.simulationRequest == "materialEntnehmen"){
+            else if (tasks[resource.aktuelleAufgabe].request.simulationRequest == "materialEntnehmen"){
               materialEntnehmen(j, "Chip");
             }
-            else if (tasks[worker.aktuelleAufgabe].request.simulationRequest == "produktentnahmeEintragen"){
-              materialEntnehmen(j, auftraege[tasks[worker.aktuelleAufgabe].auftrag].produktbezeichnung);
+            else if (tasks[resource.aktuelleAufgabe].request.simulationRequest == "produktentnahmeEintragen"){
+              materialEntnehmen(j, auftraege[tasks[resource.aktuelleAufgabe].auftrag].produktbezeichnung);
             }
-            else if (tasks[worker.aktuelleAufgabe].request.simulationRequest == "eintragen"){
-              materialHinzufügen(j, auftraege[tasks[worker.aktuelleAufgabe].auftrag].produktbezeichnung);
+            else if (tasks[resource.aktuelleAufgabe].request.simulationRequest == "eintragen"){
+              materialHinzufügen(j, auftraege[tasks[resource.aktuelleAufgabe].auftrag].produktbezeichnung);
             }
             break;
           }
@@ -389,23 +477,23 @@ async function routine (){
       else {
         // var time_hour = Date.now().getHours 
         // if (time_hour < 18 && time_hour > 8)
-        // tasks[worker.aktuelleAufgabe].remainingTime -= 10 * timeScale //Milliseconds
+        // tasks[resource.aktuelleAufgabe].remainingTime -= 10 * timeScale //Milliseconds
         simActive = true;
 
           // Aufgabe abgeschlossen
-          if (tasks[worker.aktuelleAufgabe].canComplete && (adjustToSimTime(timeCounter) - tasks[worker.aktuelleAufgabe].startTime) >= tasks[worker.aktuelleAufgabe].remainingTime){
+          if (tasks[resource.aktuelleAufgabe].canComplete && (adjustToSimTime(timeCounter) - tasks[resource.aktuelleAufgabe].startTime) >= tasks[resource.aktuelleAufgabe].remainingTime){
            
 
-            produce(tasks[worker.aktuelleAufgabe].request, {res: tasks[worker.aktuelleAufgabe].res}).catch((err) => {
+            produce(tasks[resource.aktuelleAufgabe].request, {res: tasks[resource.aktuelleAufgabe].res}, "messageservices").catch((err) => {
               console.error("error in consumer: ", err)
             })
-            store (tasks[worker.aktuelleAufgabe].request.id, tasks[worker.aktuelleAufgabe].storeText + " fertig", true)
-            tasks[worker.aktuelleAufgabe].abgeschlossen = true;
-            tasks[worker.aktuelleAufgabe].endTime = adjustToSimTime(timeCounter)
+            store (tasks[resource.aktuelleAufgabe].request.id, tasks[resource.aktuelleAufgabe].storeText + " fertig", true)
+            tasks[resource.aktuelleAufgabe].abgeschlossen = true;
+            tasks[resource.aktuelleAufgabe].endTime = adjustToSimTime(timeCounter)
             // Kosten der Aufgabe bestimmen
-            tasks[worker.aktuelleAufgabe].kosten = worker.gehaltprojahr / worker.arbeitszeitprojahr_minuten * ((tasks[worker.aktuelleAufgabe].endTime - tasks[worker.aktuelleAufgabe].startTime)/1000/60)
-            worker.aktuelleAufgabe = -1;           
-            // console.log("Worker available again.");  
+            tasks[resource.aktuelleAufgabe].kosten = resource.gehaltprojahr / resource.arbeitszeitprojahr_minuten * ((tasks[resource.aktuelleAufgabe].endTime - tasks[resource.aktuelleAufgabe].startTime)/1000/60)
+            resource.aktuelleAufgabe = -1;           
+            // console.log("resource available again.");  
           }
       }
     });
@@ -423,7 +511,7 @@ async function routine (){
   startSimTime = 0;
   timeCounter = 0;
   tasks = [];
-  workers = [];
+  Resources = [];
   log = [];
   simDifference = 0;
   routine();
@@ -432,54 +520,6 @@ async function routine (){
 
 routine();
 
-async function materialEntnehmen (taskID, _itemName){
-  await axios.post("http://localhost:3000/erpSystem/wareEntnehmen/", {
-    itemName: _itemName,
-    itemAnzahl: 1
-  })  
-  tasks[taskID].canComplete = true;
-}
-
-async function materialHinzufügen (taskID, _itemName){
-  await axios.get("http://localhost:3000/erpSystem/wareVerbuchen/", {
-    itemName: _itemName,
-    itemAnzahl: 1
-  })  
-  tasks[taskID].canComplete = true;
-}
-
-async function verfuegbarkeitPruefen (taskID, auftrag){
-    const materialVerfuegbarkeit = await axios.get("http://localhost:3000/erpSystem/warePruefen/" + auftrag.produktbezeichnung + "/" + auftrag.menge)
-    if (materialVerfuegbarkeit.data.itemAvailable){
-      tasks[taskID].res = 0;
-      console.log ("1 true");
-    } else {
-      tasks[taskID].res = 1;
-      console.log ("1 false");
-    }
-    
-    tasks[taskID].canComplete = true;
-}
-async function rohmaterialVerfuegbarkeitPruefen (taskID, auftrag){
-  const resultBOM = await axios.get("http://localhost:3000/plmSystem/getProductBOM/" + auftrag.produktbezeichnung)
-  var available = true;
-  console.log(resultBOM.data)
-  for (var i = 0; i < resultBOM.data.BOM.length; i++){
-    const materialVerfuegbarkeit = await axios.get("http://localhost:3000/erpSystem/warePruefen/" + resultBOM.data.BOM[i] + "/1")
-    if (!materialVerfuegbarkeit.data.itemAvailable){
-      available = false;
-    }
-  }
-  if (available){
-    tasks[taskID].res = 0;
-    console.log ("2 true");
-  } else {
-    tasks[taskID].res = 1;
-    console.log ("2 false");
-  }
-  c
-  tasks[taskID].canComplete = true;
-}
 
 function store (bestellID, text, show=false){
   for (var i = 0; i < log.length; i++){
@@ -510,7 +550,6 @@ router.route("/order/:number").get(async (req, res) => {
 });
 
 router.route("/order").post(async (req, res) => {
-  console.log(req.body)
   bestellungenQueue += req.body.anzahl;
   res.redirect("/simulationServer")
 });
@@ -568,17 +607,17 @@ router.route("/").get(async (req, res) => {
   if (auftraege.length != 0){
     var completeSimTime = getEndOfSimTime() - auftraege[0].startTime
     console.log("Complete Sim: " + completeSimTime / 1000 / 60 + " min")   
-    for (var i = 0; i < workers.length; i++){
+    for (var i = 0; i < Resources.length; i++){
       var obj = {}
-      obj.name = workers[i].name
+      obj.name = Resources[i].name
       obj.workingTime = 0
-      for (var t = 0; t < workers[i].tasks.length; t++){
-        obj.workingTime += (tasks[workers[i].tasks[t]].endTime - tasks[workers[i].tasks[t]].startTime)
+      for (var t = 0; t < Resources[i].tasks.length; t++){
+        obj.workingTime += (tasks[Resources[i].tasks[t]].endTime - tasks[Resources[i].tasks[t]].startTime)
       }
       obj.completeSimTime = completeSimTime;
-      obj.wertschöpfung = obj.workingTime/1000/60 * workers[i].gehaltprojahr/ workers[i].arbeitszeitprojahr_minuten;
-      obj.bezahlung = completeSimTime/1000/60 * workers[i].gehaltprojahr/ workers[i].arbeitszeitprojahr_minuten;
-      obj.abteilung = workers[i].verantwortung
+      obj.wertschöpfung = obj.workingTime/1000/60 * Resources[i].gehaltprojahr/ Resources[i].arbeitszeitprojahr_minuten;
+      obj.bezahlung = completeSimTime/1000/60 * Resources[i].gehaltprojahr/ Resources[i].arbeitszeitprojahr_minuten;
+      obj.abteilung = Resources[i].verantwortung
       gesamtAusgaben += obj.bezahlung
       gesamtWertschöpfung += obj.wertschöpfung
       workerStats.push(obj)
@@ -771,27 +810,27 @@ router.route("/data").get(async (req, res) => {
   }
   // Jetzt die Zeitachse der Werker zeigen:
   if (tasks.length != 0){
-    for (var j = 0; j < workers.length; j++){
+    for (var j = 0; j < Resources.length; j++){
         var parentId = resData.length + 1
         var item = {}
         item.id = parentId
-        item.text = workers[j].name + " (" + workers[j].verantwortung + ")"
+        item.text = Resources[j].name + " (" + Resources[j].verantwortung + ")"
         item.start_date = convertDate(auftraege[0].startTime)
         item.duration =  null
         item.parent = 2
         item.progress = 1
         item.color = "green"
-        if (workers[j].tasks.length == 0){          
+        if (Resources[j].tasks.length == 0){          
           item.duration =  Math.round((tasks[0].endTime - tasks[0].startTime)/1000/60)
         }
         resData.push(item)
 
-        for (var i = 0; i < workers[j].tasks.length; i++){
+        for (var i = 0; i < Resources[j].tasks.length; i++){
           item = {}
           item.id = resData.length + 1
-          item.text = tasks[workers[j].tasks[i]].type;
-          item.start_date = convertDate(tasks[workers[j].tasks[i]].startTime)
-          item.duration =  Math.round((tasks[workers[j].tasks[i]].endTime - tasks[workers[j].tasks[i]].startTime)/1000/60)
+          item.text = tasks[Resources[j].tasks[i]].type;
+          item.start_date = convertDate(tasks[Resources[j].tasks[i]].startTime)
+          item.duration =  Math.round((tasks[Resources[j].tasks[i]].endTime - tasks[Resources[j].tasks[i]].startTime)/1000/60)
           item.parent = parentId
           item.progress = 1
           resData.push(item)

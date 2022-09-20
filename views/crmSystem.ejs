@@ -1,3 +1,28 @@
 <%- include('partials/header') %>
 
 Dies ist das CRM System
+
+<div class="col ms-auto">
+    <table border="1">
+    <tr>
+        <th width=500 style="background-color:#1c87c9;">Kunde</th>
+        <th width=300 style="background-color:#1c87c9;">Adresse</th>
+        <th width=300 style="background-color:#1c87c9;">Konditionen (Stück/ Preis pro Stück)...</th>
+    </tr>
+    <% for (var i = 0; i < kundenData.length; i++) { %>
+        <tr>
+            <th width=300 > <%= kundenData[i].name %> </th>
+            <th width=300 > <%= kundenData[i].lieferAdresse %> </th>
+            <% for (var j = 0; j < kundenData[i].lieferKonditionen.length; j++) { %>
+                <th width=300 > <%= kundenData[i].lieferKonditionen[j].matId %> : Ab <%= kundenData[i].lieferKonditionen[j].stk %> Stk <%= kundenData[i].lieferKonditionen[j].preisProStk %> <%= kundenData[i].lieferKonditionen[j].einheit %> pro Stk </th>
+            <% } %>
+        </tr>
+    <% } %>
+</table>
+<form action="http://localhost:3000/crmSystem/saveData" method="POST" class="card-body">                   
+    <div class="form-group">
+        <button type="submit" class="btn btn-primary">Kundenstamm speichern</button>
+    </div>
+    <!-- <span class="UpvoteButton">Alert(0) aufrufen</span> -->
+</form>
+</div>
