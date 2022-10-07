@@ -109,7 +109,10 @@ function pushNewData (type){
     );
   }
 }
+
 var auftraege = []; // Enthält alle Aufträge und ihren Bearbeitungsfortschritt
+
+
 
 router.route("/").get(async (req, res) => {
   res.render("erpSystem", {
@@ -135,20 +138,21 @@ router.route("/saveData").post((req, res) => {
 });
 
 
-router.route("/warePruefen/:itemName/:itemAnzahl").get(async (req, res) => {
+router.route("/warePruefen/:itemName/:itemAnzahl/:lagerortId").get(async (req, res) => {
   var result = {};
   result.itemAvailable = verfügbarkeitPrüfen(
     req.params.itemName,
-    req.params.itemAnzahl
+    req.params.itemAnzahl,
+    req.params.lagerortId
   );
-  console.log("REQUEST PRÜFUNG");
+  console.log("REQUEST PRÜFUNG " + JSON.stringify (req.params));
   res.send(result);
 });
 
-function verfügbarkeitPrüfen(itemName, itemAnzahl) {
+function verfügbarkeitPrüfen(itemName, itemAnzahl, lagerortId) {
   var itemAvailable = false;
   for (var i = 0; i < inventory.length; i++) {
-    if (inventory[i].itemName == itemName) {
+    if (inventory[i].itemName == itemName && inventory[i].lagerortId == lagerortId) {
       if (inventory[i].itemAnzahl >= parseInt(itemAnzahl)) {
         itemAvailable = true;
         break;
@@ -205,6 +209,7 @@ router.route("/materialstammHinzufuegen").post((req, res) => {
 });
 
 router.route("/auftragHinzufuegen").post((req, res) => {
+  console.log("Auftrag hinzufügen")
   var _auftragsId = req.body.auftragsId;
   var _auftragsTyp = req.body.auftragsTyp;
   var _kundenId = req.body.kundenId;
@@ -213,7 +218,9 @@ router.route("/auftragHinzufuegen").post((req, res) => {
   var _lagerortId = req.body.lagerortId;
   var _bestellDatum = req.body.bestellDatum;
   var _lieferDatumSoll = req.body.lieferDatumSoll;
-  var _lieferDatumGeplant = req.body.lieferDatumGeplant;
+  var _lieferAdresse = req.body.lieferAdresse ?? "";
+  var _lieferDatumGeplant = req.body.lieferDatumGeplant ?? "";
+  var _status = req.body.status ?? "";
   var _lieferDatumIst = req.body.lieferDatumIst;
   var _status = [];
   var placeNew = true;
@@ -229,7 +236,8 @@ router.route("/auftragHinzufuegen").post((req, res) => {
     newAuftrag.auftragsTyp = _auftragsTyp.toString();
     newAuftrag.bestellDatum = _bestellDatum.toString();
     newAuftrag.lieferDatumSoll = _lieferDatumSoll.toString();
-    // newAuftrag.lieferDatumGeplant = _lieferDatumGeplant.toString();
+    newAuftrag.lieferAdresse = _lieferAdresse.toString();
+    newAuftrag.lieferDatumGeplant = _lieferDatumGeplant.toString();
 
     newAuftrag.itemId = _itemId.toString();
     newAuftrag.kundenId = _kundenId.toString();
@@ -240,13 +248,16 @@ router.route("/auftragHinzufuegen").post((req, res) => {
 
     auftraege.push(newAuftrag);
   }
-  res.redirect("/erpSystem");
+  // res.redirect("/erpSystem");
+  res.send ("Acknowledgement")
 });
 
 router.route("/auftragBearbeiten").post((req, res) => {
   
   res.redirect("/erpSystem");
 });
+
+
 
 router.route("/wareVerbuchen").post((req, res) => {
   var itemName = req.body.itemName;
@@ -267,25 +278,31 @@ router.route("/wareVerbuchen").post((req, res) => {
     newItem.lagerortId = lagerortId.toString();
     inventory.push(newItem);
   }
-  res.redirect("/erpSystem");
+  console.log("Added Item successfully!")
+  res.status(201).json({
+    message: 'Thing created successfully!'
+  });
 });
 
 router.route("/wareEntnehmen").post((req, res) => {
+  console.log(JSON.stringify(req.body) + JSON.stringify(inventory[0]))
   var itemName = req.body.itemName;
   var itemAnzahl = req.body.itemAnzahl;
-
-  if (verfügbarkeitPrüfen(itemName, itemAnzahl)) {
-    for (var i = 0; i < inventory.length; i++) {
-      if (inventory[i].itemName == itemName && inventory[i].lagerortId == lagerortId) {
-        inventory[i].itemAnzahl -= parseInt(itemAnzahl);
-        if (inventory[i].itemAnzahl <= 0) {
-          inventory.splice(i, 1);
-        }
-        break;
+  var lagerortId = req.body.lagerortId;  
+  for (var i = 0; i < inventory.length; i++) {
+    if (inventory[i].itemName == itemName && inventory[i].lagerortId == lagerortId) {
+      inventory[i].itemAnzahl -= parseInt(itemAnzahl);
+      console.log ("ist verfügbar");
+      if (inventory[i].itemAnzahl <= 0) {
+        inventory.splice(i, 1);
       }
+      break;
     }
   }
-  res.redirect("/erpSystem");
+  console.log("Removed Item successfully!")
+  res.status(201).json({
+    message: 'Thing removed successfully!'
+  });
 });
 
 // REST API GET REQUESTS:
@@ -294,8 +311,13 @@ router.route("/inventory").get(async (req, res) => {
   res.send(result);
 });
 
+router.route("/auftraege").get(async (req, res) => {
+  var result = auftraege;
+  res.send(result);
+});
+
 router.route("/inventory/:LagerID").get(async (req, res) => {
-  var result = {};
+  var result = [];
 
   for (var i = 0; i < inventory.length; i++){
     if (inventory[i].lagerortId == req.params.LagerID){
@@ -305,8 +327,30 @@ router.route("/inventory/:LagerID").get(async (req, res) => {
   res.send(result);
 });
 
+router.route("/lager/:materialID").get(async (req, res) => {
+  var result = [];
+
+  for (var i = 0; i < inventory.length; i++){
+    if (inventory[i].itemId == req.params.materialID){
+      result.push(inventory[i].lagerortId);
+      break;
+    }
+  }
+  res.send(result);});
+
 router.route("/materialstamm").get(async (req, res) => {
   var result = materialStammdaten;
+  res.send(result);
+});
+router.route("/materialstamm/:materialBezeichnung").get(async (req, res) => {
+  var result = "Result";
+
+  for (var i = 0; i < materialStammdaten.length; i++){
+    if (materialStammdaten[i].itemName == req.params.materialBezeichnung){
+      result = materialStammdaten[i].itemId;
+      break;
+    }
+  }
   res.send(result);
 });
 
@@ -314,5 +358,6 @@ router.route("/lagerortstamm").get(async (req, res) => {
   var result = lagerortStammdaten;
   res.send(result);
 });
+
 
 module.exports = router;

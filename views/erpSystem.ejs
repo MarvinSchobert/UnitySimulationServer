@@ -182,13 +182,13 @@
         <table border="1">
             <tr>
                 <th width=100 style="background-color:#4e9bcb;">Lagerort</th>
-                <th width=500 style="background-color:#4e9bcb;">Itemname</th>
+                <th width=300 style="background-color:#4e9bcb;">Itemname</th>
                 <th width=100 style="background-color:#4e9bcb;">Anzahl</th>
             </tr>
             <% for (var i = 0; i < inventory.length; i++) { %>
                 <tr>
                     <th width=100 > <%= inventory[i].lagerortId.toString() %> </th>
-                    <th width=500 > <%= inventory[i].itemName.toString() %> </th>
+                    <th width=300 > <%= inventory[i].itemName.toString() %> </th>
                     <th width=100 > <%= inventory[i].itemAnzahl.toString() %> </th>
                 </tr>
             <% } %>
@@ -206,6 +206,8 @@
                 <th width=300 style="background-color:#53c77f;">Produkt</th>
                 <th width=200 style="background-color:#53c77f;">Anzahl</th>
                 <th width=300 style="background-color:#53c77f;">Ort</th>
+                <th width=300 style="background-color:#53c77f;">Lieferadresse</th>
+                <th width=300 style="background-color:#53c77f;">Status</th>
             </tr>
             <% for (var i = 0; i < auftraege.length; i++) { %>
                 <tr>
@@ -217,6 +219,8 @@
                     <th width=300 > <%= auftraege[i].itemId.toString() %> </th>
                     <th width=200 > <%= auftraege[i].itemAnzahl.toString() %> </th>
                     <th width=300 > <%= auftraege[i].lagerortId.toString() %> </th>
+                    <th width=300 > <%= auftraege[i].lieferAdresse.toString() %> </th>
+                    <th width=300 > <%= auftraege[i].status.toString() %> </th>
                 </tr>
             <% } %>
         </table>

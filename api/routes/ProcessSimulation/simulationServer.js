@@ -21,12 +21,13 @@ var timeCounter = 0;
 const bestellungAufgeben = async () => {
 	await producer.connect()
   try {
-    id= "bestellung"+Math.floor(Math.random() * 10000);
-    produktbezeichnung = "Fahrrad"
-    menge = 1
-    kunde = ""
-    lieferAdresse = ""
-    lieferDatumSoll = ""
+    var id= "bestellung"+Math.floor(Math.random() * 10000);
+    var produktbezeichnung = "Fahrrad"
+    var menge = 1
+    var kunde = "KUN01"
+    var lieferAdresse = "Blumenweg 3 Deutschland"
+    var lieferDatumSoll = adjustToSimTime(timeCounter + 24*60*60*5).toISOString()
+    var bestellDatum = adjustToSimTime(timeCounter).toISOString()
 
     await producer.send({
       topic: "messageorder",
@@ -38,6 +39,7 @@ const bestellungAufgeben = async () => {
               "lieferAdresse": lieferAdresse, 
               "lieferDatumSoll": lieferDatumSoll, 
               "produktbezeichnung": produktbezeichnung, 
+              "bestellDatum": bestellDatum,
               "menge": menge, 
               "id": id}
             ),
@@ -69,13 +71,14 @@ const bestellungAufgeben = async () => {
 
 const produce = async (topic, data, parameter) => {
 	await producer.connect()
+  console.log("Sending: " + JSON.stringify(data));
   try {
     await producer.send({
       topic: topic,
       messages: [
         {
           key: "Nachricht",
-          value: JSON.stringify({"id": data.id,  "eventKey":"simulationMessage" ,"Nachricht": parameter}),
+          value: JSON.stringify({"id": data.id, "simulationRequest":data.simulationRequest, "eventKey":"simulationMessage" ,"Nachricht": parameter}),
         },
       ],
     })
@@ -95,10 +98,10 @@ const consume = async () => {
 	await consumer.subscribe({topics: ["message-process"]})
 	await consumer.run({ 
 		eachMessage:  async ({message}) => {
+      console.log("Here" + message.value);
       var request = JSON.parse(message.value)
       var simulationReq = request.simulationRequest
       var res = 0;
-      
       var rnd = Math.floor(Math.random() * 100)
       var requiredTimeMS = 1000 * request.menge; // eine Sekunde pro Auftrag
 
@@ -194,8 +197,11 @@ const consume = async () => {
       }
       else if (simulationReq == "verfuegbarkeitPruefen"){
         task.verantwortung = "Produktionsplanung"
-        task.canComplete = false;
         if (rnd <50) res = 1;      
+      }
+      else if (simulationReq == "stuecklisteBetrachten"){
+        task.verantwortung = "Produktionsplanung"
+        if (rnd <50) res = 1;    
       }
       else if (simulationReq == "bedarfNachbearbeiten"){
         task.verantwortung = "Produktionsplanung"
@@ -204,7 +210,6 @@ const consume = async () => {
       }
       else if (simulationReq == "rohmaterialVerfuegbarkeitPruefen"){
         task.verantwortung = "Produktionsplanung"
-        task.canComplete = false;
         if (rnd <50) res = 1;      
       }
       else if (simulationReq == "problemBeschreiben"){
@@ -270,6 +275,10 @@ const consume = async () => {
         task.verantwortung = "Logistik"
         if (rnd <50) res = 1;    
       }
+      else if (simulationReq == "auftragEintragen"){
+        task.verantwortung = "Logistik"
+        if (rnd <50) res = 1;    
+      }
       else if (simulationReq == "lieferungEinlagern"){
         task.verantwortung = "Logistik"
         if (rnd <50) res = 1;    
@@ -279,7 +288,6 @@ const consume = async () => {
         if (rnd <50) res = 1;    
       }
       else if (simulationReq == "produktentnahmeEintragen"){
-        task.canComplete = false;
         task.verantwortung = "Logistik"
         if (rnd <50) res = 1;    
       }
@@ -290,7 +298,6 @@ const consume = async () => {
 
        // Produktion
       else if (simulationReq == "materialEntnehmen"){
-        task.canComplete = false;
         task.verantwortung = "Produktionsmitarbeiter"
         if (rnd <50) res = 1;    
       }
@@ -299,7 +306,6 @@ const consume = async () => {
         if (rnd <50) res = 1;    
       }
       else if (simulationReq == "eintragen"){
-        task.canComplete = false;
         task.verantwortung = "Produktionsmitarbeiter"
         if (rnd <50) res = 1;    
       }
@@ -408,6 +414,16 @@ async function routine (){
   for (var i = 0; i < 1; i++){
     var resource = {}
     resource.aktuelleAufgabe = -1
+    resource.verantwortung = "Finanz"
+    resource.tasks = []
+    resource.name = firstnames [Math.floor(Math.random() * firstnames.length)] + " " + lastnames [Math.floor(Math.random() * lastnames.length)]
+    resource.gehaltprojahr = 80000
+    resource.arbeitszeitprojahr_minuten = 90000
+    Resources.push(resource)    
+  }
+  for (var i = 0; i < 1; i++){
+    var resource = {}
+    resource.aktuelleAufgabe = -1
     resource.verantwortung = "Maschine"
     resource.tasks = []
     resource.name = "Maschine " + i;
@@ -454,21 +470,7 @@ async function routine (){
             resource.aktuelleAufgabe = j
             resource.tasks.push (j)
             simActive = true;
-            if (tasks[resource.aktuelleAufgabe].request.simulationRequest == "verfuegbarkeitPruefen"){
-              verfuegbarkeitPruefen(j, auftraege[tasks[resource.aktuelleAufgabe].auftrag]);
-            }
-            else if (tasks[resource.aktuelleAufgabe].request.simulationRequest == "rohmaterialVerfuegbarkeitPruefen"){
-              rohmaterialVerfuegbarkeitPruefen(j, auftraege[tasks[resource.aktuelleAufgabe].auftrag]);
-            }
-            else if (tasks[resource.aktuelleAufgabe].request.simulationRequest == "materialEntnehmen"){
-              materialEntnehmen(j, "Chip");
-            }
-            else if (tasks[resource.aktuelleAufgabe].request.simulationRequest == "produktentnahmeEintragen"){
-              materialEntnehmen(j, auftraege[tasks[resource.aktuelleAufgabe].auftrag].produktbezeichnung);
-            }
-            else if (tasks[resource.aktuelleAufgabe].request.simulationRequest == "eintragen"){
-              materialHinzufügen(j, auftraege[tasks[resource.aktuelleAufgabe].auftrag].produktbezeichnung);
-            }
+            tasks[j].canComplete = true;
             break;
           }
         }
@@ -484,7 +486,7 @@ async function routine (){
           if (tasks[resource.aktuelleAufgabe].canComplete && (adjustToSimTime(timeCounter) - tasks[resource.aktuelleAufgabe].startTime) >= tasks[resource.aktuelleAufgabe].remainingTime){
            
 
-            produce(tasks[resource.aktuelleAufgabe].request, {res: tasks[resource.aktuelleAufgabe].res}, "messageservices").catch((err) => {
+            produce("messageservices", tasks[resource.aktuelleAufgabe].request, {res: tasks[resource.aktuelleAufgabe].res}).catch((err) => {
               console.error("error in consumer: ", err)
             })
             store (tasks[resource.aktuelleAufgabe].request.id, tasks[resource.aktuelleAufgabe].storeText + " fertig", true)
@@ -576,7 +578,10 @@ router.route("/").get(async (req, res) => {
         // Der Variante einen Counter hinzufügen:
         processVariants[j].counter++;
         processVariants[j].auftraege.push(auftraege[i].id)
-        var time = tasks[auftraege[i].tasks[auftraege[i].tasks.length-1]].endTime - auftraege[i].startTime;
+        var time = 0
+        if(auftraege[i].tasks.length > 0 && tasks[auftraege[i].tasks[auftraege[i].tasks.length-1]].endTime!= null){
+          time = tasks[auftraege[i].tasks[auftraege[i].tasks.length-1]].endTime - auftraege[i].startTime
+        }
         processVariants[j].totalTime += time;
         for (var k = 0; k < auftraege[i].tasks.length; k++){
           processVariants[j].kosten += tasks[auftraege[i].tasks[k]].kosten
@@ -597,7 +602,10 @@ router.route("/").get(async (req, res) => {
       }
       
       obj.counter = 1
-      var time = tasks[auftraege[i].tasks[auftraege[i].tasks.length-1]].endTime - auftraege[i].startTime
+      var time = 0
+      if(auftraege[i].tasks.length > 0 && tasks[auftraege[i].tasks[auftraege[i].tasks.length-1]].endTime!= null){
+        time = tasks[auftraege[i].tasks[auftraege[i].tasks.length-1]].endTime - auftraege[i].startTime
+      }
       obj.totalTime = time
       processVariants.push(obj);
     }
@@ -664,8 +672,8 @@ function createExcelDocument (){
     font: {
       // color: '#FF0800',
       size: 12
-    },
-    numberFormat: '$#,##0.00; ($#,##0.00); -'
+    }// ,
+    // numberFormat: '$#,##0.00; ($#,##0.00); -'
   });
 
   worksheet.cell(1,1).string("Übersicht über alle Bestellungen").style(style);
@@ -682,8 +690,8 @@ function createExcelDocument (){
     worksheet.cell(3+i,2).string(auftraege[i].produktbezeichnung).style(style);
     worksheet.cell(3+i,3).number(auftraege[i].menge).style(style);
     worksheet.cell(3+i,4).date(auftraege[i].startTime).style(style);
-    if (tasks[auftraege[i].tasks[auftraege[i].tasks.length-1]].endTime!= null) worksheet.cell(3+i,5).date(tasks[auftraege[i].tasks[auftraege[i].tasks.length-1]].endTime).style(style);
-    if (tasks[auftraege[i].tasks[auftraege[i].tasks.length-1]].endTime!= null) worksheet.cell(3+i,6).number(tasks[auftraege[i].tasks[auftraege[i].tasks.length-1]].endTime - auftraege[i].startTime).style(style);
+    if (auftraege[i].tasks.length > 0 && tasks[auftraege[i].tasks[auftraege[i].tasks.length-1]].endTime!= null) worksheet.cell(3+i,5).date(tasks[auftraege[i].tasks[auftraege[i].tasks.length-1]].endTime).style(style);
+    if (auftraege[i].tasks.length > 0 && tasks[auftraege[i].tasks[auftraege[i].tasks.length-1]].endTime!= null) worksheet.cell(3+i,6).number((tasks[auftraege[i].tasks[auftraege[i].tasks.length-1]].endTime - auftraege[i].startTime)/1000).style(style);
   }
 
 
@@ -703,7 +711,7 @@ function createExcelDocument (){
       worksheet2.cell(3+i,3).string(tasks[i].bearbeiter).style(style);
       worksheet2.cell(3+i,4).date(tasks[i].startTime).style(style);
       if (tasks[i].endTime != null) worksheet2.cell(3+i,5).date(tasks[i].endTime).style(style);
-      if (tasks[i].endTime != null) worksheet2.cell(3+i,6).number(tasks[i].endTime - tasks[i].startTime).style(style);      
+      if (tasks[i].endTime != null) worksheet2.cell(3+i,6).number((tasks[i].endTime - tasks[i].startTime)/1000).style(style);      
     }
   }
 

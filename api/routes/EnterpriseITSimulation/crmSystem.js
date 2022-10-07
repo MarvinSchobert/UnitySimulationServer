@@ -9,6 +9,7 @@ var kundenData = [];
 // ein Objekt:
 // {
 //       name: String, // Name des Kunden (ein Kunde kann auch mehrmals eingetragen sein mit unterschiedlichen Lieferadressen)  
+//       kundenId: String, // Id des Kunden (eindeutig)
 //       lieferKonditionen: 
 //          {
 //            matId: string, // Welche MaterialId enthält diese Konditionen
@@ -51,6 +52,7 @@ function pushNewData (type){
     kundenData.push(
       {
         name: "Radhaus",
+        kundenId: "KUN1",
         lieferKonditionen: [
           { matId: "MAT01", stk: 1, preisProStk: 800, einheit: "EUR" },
           { matId: "MAT01", stk: 10, preisProStk: 650, einheit: "EUR" },
@@ -59,6 +61,7 @@ function pushNewData (type){
       },
       {
         name: "Stadler",
+        kundenId: "KUN2",
         lieferKonditionen: [
           { matId: "MAT01", stk: 1, preisProStk: 850, einheit: "EUR" },
           { matId: "MAT01", stk: 15, preisProStk: 620, einheit: "EUR" },
@@ -75,8 +78,11 @@ router.route("/").get(async (req, res) => {
   });
 });
 
-router.route("/customerExistent/:name/:matID").get(async (req, res) => {
-    result = true;
+router.route("/customerStatus/:name/:matID").get(async (req, res) => {
+    result = {
+      registrationStatus: "registered",
+      kundenId: "KUN1"
+    }
     res.send (result);
 });
 
