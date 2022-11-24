@@ -71,7 +71,8 @@ const bestellungAufgeben = async () => {
 
 const produce = async (topic, data, parameter) => {
 	await producer.connect()
-  console.log("Sending: " + JSON.stringify(data));
+  // console.log("Sending: " + JSON.stringify(data));
+  // console.log("");
   try {
     await producer.send({
       topic: topic,
@@ -98,7 +99,7 @@ const consume = async () => {
 	await consumer.subscribe({topics: ["message-process"]})
 	await consumer.run({ 
 		eachMessage:  async ({message}) => {
-      console.log("Here" + message.value);
+      // console.log("Here" + message.value);
       var request = JSON.parse(message.value)
       var simulationReq = request.simulationRequest
       var res = 0;
@@ -265,6 +266,10 @@ const consume = async () => {
         task.verantwortung = "Finanz"
         if (rnd <50) res = 1;    
       }
+      else if (simulationReq == "rechnungBegleichen"){
+        task.verantwortung = "Finanz"
+        if (rnd <50) res = 1;    
+      }
 
       // Logistik
       else if (simulationReq == "lieferungEntgegennehmen"){
@@ -301,6 +306,10 @@ const consume = async () => {
         task.verantwortung = "Produktionsmitarbeiter"
         if (rnd <50) res = 1;    
       }
+      else if (simulationReq == "produktionsauftragBegutachten"){
+        task.verantwortung = "Produktionsmitarbeiter"
+        if (rnd <50) res = 1;    
+      }
       else if (simulationReq == "kommissionieren"){
         task.verantwortung = "Produktionsmitarbeiter"
         if (rnd <50) res = 1;    
@@ -317,7 +326,11 @@ const consume = async () => {
         task.verantwortung = "Maschine"
         if (rnd <50) res = 1;    
       }
-     
+      // Delay
+      else if (simulationReq == "delay"){
+        task.verantwortung = "Timer"
+      }
+      
      
       
       if (request.verantwortung != null && request.verantwortung != "")
@@ -453,7 +466,7 @@ async function routine (){
     Resources.forEach( (resource) => {
       // Neuen Task nehmen
       if (resource.aktuelleAufgabe == -1){
-        for (var j = 0; j < tasks.length; j++){
+        for (var j = 0; j < tasks.length; j++){  
           if (!tasks[j].abgeschlossen && tasks[j].aktuellBearbeitet == false && resource.verantwortung == tasks[j].verantwortung)
           {
             // Auswahl überlegen bzgl. Umrüstzeit etc.

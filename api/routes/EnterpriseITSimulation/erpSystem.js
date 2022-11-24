@@ -88,14 +88,16 @@ function initData (path, type){
 function pushNewData (type){
   if (type == "materialStammdaten"){
     materialStammdaten.push(
-      { itemId: "MAT01", itemName: "Fahrrad", produktTyp: "Fertigerzeugnis" },
-      { itemId: "MAT02", itemName: "ZSB_Rahmen", produktTyp: "Halberzeugnis" },
-      { itemId: "MAT03", itemName: "Rahmen", produktTyp: "Rohmaterial" },
-      { itemId: "MAT041", itemName: "Pedal", produktTyp: "Rohmaterial" },
-      { itemId: "MAT042", itemName: "Bremse", produktTyp: "Rohmaterial" },
-      { itemId: "MAT043", itemName: "Gangschaltung", produktTyp: "Rohmaterial" },
-      { itemId: "MAT044", itemName: "Lenker", produktTyp: "Rohmaterial" },
-      { itemId: "MAT05", itemName: "Reifen", produktTyp: "Rohmaterial" }
+      { itemId: "MAT10", itemName: "Radar_BackEnd", produktTyp: "Halberzeugnis", typ: "Eigenfertigung"},
+      { itemId: "MAT30", itemName: "Radar", produktTyp: "Fertigerzeugnis", typ: "Eigenfertigung"},
+      { itemId: "MAT11", itemName: "PCB", produktTyp: "Rohmaterial", typ: "Zukauf"},
+      { itemId: "MAT12", itemName: "Lötpaste", produktTyp: "Rohmaterial", typ: "Zukauf"},
+      { itemId: "MAT13", itemName: "Elektrische_Bauelemente", produktTyp: "Rohmaterial", typ: "Zukauf"},
+      { itemId: "MAT21", itemName: "Gehäuse", produktTyp: "Rohmaterial", typ: "Zukauf"},
+      { itemId: "MAT22", itemName: "Peripherie", produktTyp: "Rohmaterial", typ: "Zukauf"},
+
+      { itemId: "MAT111", itemName: "PCB mit Paste", produktTyp: "Halberzeugnis", typ: "Eigenfertigung"},
+      { itemId: "MAT131", itemName: "Bestuecktes PCB", produktTyp: "Halberzeugnis", typ: "Eigenfertigung"}
     );
   }
   else if (type == "lagerortStammdaten"){
@@ -267,7 +269,7 @@ router.route("/wareVerbuchen").post((req, res) => {
   for (var i = 0; i < inventory.length; i++) {
     if (inventory[i].itemName == itemName && inventory[i].lagerortId == lagerortId) {
       inventory[i].itemAnzahl += parseInt(itemAnzahl);
-      placeNew = false;
+      placeNew = false;      
       break;
     }
   }
@@ -278,6 +280,7 @@ router.route("/wareVerbuchen").post((req, res) => {
     newItem.lagerortId = lagerortId.toString();
     inventory.push(newItem);
   }
+  console.log("Adding: " + JSON.stringify(req.body))
   console.log("Added Item successfully!")
   res.status(201).json({
     message: 'Thing created successfully!'
@@ -285,24 +288,32 @@ router.route("/wareVerbuchen").post((req, res) => {
 });
 
 router.route("/wareEntnehmen").post((req, res) => {
-  console.log(JSON.stringify(req.body) + JSON.stringify(inventory[0]))
+  console.log("Removing: " + JSON.stringify(req.body))
   var itemName = req.body.itemName;
   var itemAnzahl = req.body.itemAnzahl;
   var lagerortId = req.body.lagerortId;  
+  var success = false;
   for (var i = 0; i < inventory.length; i++) {
     if (inventory[i].itemName == itemName && inventory[i].lagerortId == lagerortId) {
       inventory[i].itemAnzahl -= parseInt(itemAnzahl);
-      console.log ("ist verfügbar");
       if (inventory[i].itemAnzahl <= 0) {
         inventory.splice(i, 1);
       }
+      success = true
+      console.log("Removed Item successfully!")    
       break;
     }
   }
-  console.log("Removed Item successfully!")
-  res.status(201).json({
-    message: 'Thing removed successfully!'
-  });
+  if (success){
+    res.status(201).json({
+      message: 'Thing removed successfully!'
+    });
+  }
+  else {
+    res.status(201).json({
+      message: 'Thing not removed!'
+    });
+  }
 });
 
 // REST API GET REQUESTS:
@@ -343,11 +354,12 @@ router.route("/materialstamm").get(async (req, res) => {
   res.send(result);
 });
 router.route("/materialstamm/:materialBezeichnung").get(async (req, res) => {
-  var result = "Result";
+  var result = {};
 
   for (var i = 0; i < materialStammdaten.length; i++){
     if (materialStammdaten[i].itemName == req.params.materialBezeichnung){
-      result = materialStammdaten[i].itemId;
+      result.materialID = materialStammdaten[i].itemId;
+      result.typ = materialStammdaten[i].typ;
       break;
     }
   }

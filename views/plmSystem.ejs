@@ -33,9 +33,31 @@
 Dies ist das PLM System
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
 
-
-
 <div class="col ms-auto">
+    <br>
+    Aufbaureihenfolge:
+    <table border="1">
+        <tr>
+            <th width=500 style="background-color:#1c87c9;">Prozess-Name</th>
+            <th width=300 style="background-color:#1c87c9;">Task-ID</th>
+            <th width=300 style="background-color:#1c87c9;">Resource</th>
+            <th width=300 style="background-color:#1c87c9;">Input</th>
+            <th width=300 style="background-color:#1c87c9;">Output</th>
+        </tr>
+    <% for (var i = 0; i < process.length; i++) { %>
+        <tr>
+            <th width=500 > <%= process[i].processName %> </th>
+            <th width=300 > <%= process[i].taskId %> </th>
+            <th width=300 > <%= process[i].resources[0] %> </th>
+            <th width=300 > <%= process[i].inputProducts %> </th>
+            <th width=300 > <%= process[i].outputProducts %> </th>
+        </tr>
+    <% } %>
+    </table>
+</div> 
+<br>
+<div class="col ms-auto">
+    BOM:
     <% for (var i = 0; i < bom.length; i++) { %>
         <details open class="col-lg-8 card">
             <summary> <%= bom[i].name %> </summary>

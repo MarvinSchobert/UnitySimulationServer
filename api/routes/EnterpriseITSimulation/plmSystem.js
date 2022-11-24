@@ -14,10 +14,26 @@ var ebomData2 = [];
 // }
 
 
-initData("EBOM.json");
-pushNewData2();
+var productionTaskStammdaten = [];
+// ein Objekt:
+// {
+//       taskId: String, // eine eindeutige ID
+//       processName: String, // der Prozesstyp (bspw. Zuführen, Drucken, Transportieren...)
+//       resources: [ // Instanz-ID des entsprechenden Equipments//        
+//          resourceId: String        
+//       ],
+//       inputProducts: [ itemId: String ], // Stammdaten-ID des Produkts
+//       outputProducts: [ itemId: String ], // Stammdaten-ID des Produkts
+// }
+
+
+
+
+initData("EBOM.json", "ebom");
+initData("ProductionProcess.json", "process");
+// pushNewData2();
 // Es wird ebomData aus der Datenbank gelesen, wenn Einträge vorhanden sind, diese nehmen, ansonsten generischen Inhalt einfüllen
-function initData(path) {
+function initData(path, type) {
   try {
     
     if (fs.existsSync(path)) {
@@ -25,26 +41,128 @@ function initData(path) {
       let data = JSON.parse(rawdata);
 
       if (data != null && data.length != 0) {
-        ebomData = data;
+        if (type == "ebom"){
+          ebomData = data;
+        }
+        else if (type == "process"){
+          productionProcessData = data;
+        }
+        
       }
       else {
-        pushNewData()
+        if (type == "ebom"){
+          pushEBOM()
+        }
+        else if (type == "process"){
+          pushProcessData()
+        }
       }
     }
     else {
-      pushNewData()
+      if (type == "ebom"){
+        pushEBOM()
+      }
+      else if (type == "process"){
+        pushProcessData()
+      }      
     }
   } catch (err) {
     console.error(err)
   }
   
 }
+
+function pushProcessData (){
+  productionTaskStammdaten.push({   
+    taskId: "T10",
+    processName: "Zufuehren",
+    resources: ["Werker"],
+    inputProducts: ["MAT11"],
+    outputProducts: ["MAT11"],
+  },{   
+    taskId: "T20",
+    processName: "Drucken",
+    resources: ["E10"],
+    inputProducts: ["MAT11", "MAT12"],
+    outputProducts: ["MAT111"],
+  },{   
+    taskId: "T30",
+    processName: "Transportieren",
+    resources: ["E20"],
+    inputProducts: ["MAT111"],
+    outputProducts: ["MAT111"],
+  },{   
+    taskId: "T40",
+    processName: "Bestuecken",
+    resources: ["E30"],
+    inputProducts: ["MAT111", "M13"],
+    outputProducts: ["MAT131"],
+  },{   
+    taskId: "T50",
+    processName: "Transportieren",
+    resources: ["E40"],
+    inputProducts: ["MAT11"],
+    outputProducts: ["MAT11"],
+  },{   
+    taskId: "T60",
+    processName: "Loeten",
+    resources: [],
+    inputProducts: ["MAT11"],
+    outputProducts: ["MAT11"],
+  },{   
+    taskId: "T70",
+    processName: "Kommissionieren",
+    resources: [],
+    inputProducts: ["MAT11"],
+    outputProducts: ["MAT11"],
+  },{   
+    taskId: "T80",
+    processName: "Zufuehren",
+    resources: [],
+    inputProducts: ["MAT11"],
+    outputProducts: ["MAT11"],
+  },{   
+    taskId: "T90",
+    processName: "Zufuehren",
+    resources: [],
+    inputProducts: ["MAT11"],
+    outputProducts: ["MAT11"],
+  },{   
+    taskId: "T100",
+    processName: "Zufuehren",
+    resources: [],
+    inputProducts: ["MAT11"],
+    outputProducts: ["MAT11"],
+  },{   
+    taskId: "T110",
+    processName: "Montieren",
+    resources: [],
+    inputProducts: ["MAT11"],
+    outputProducts: ["MAT11"],
+  },{   
+    taskId: "T120",
+    processName: "Pruefen",
+    resources: [],
+    inputProducts: ["MAT11"],
+    outputProducts: ["MAT11"],
+  },{   
+    taskId: "T130",
+    processName: "Kommissionieren",
+    resources: [],
+    inputProducts: ["MAT11"],
+    outputProducts: ["MAT11"],
+  }
+  
+  
+  )
+}
+
 function pushNewData2() {
   ebomData2.push(
     {
-      id: "MAT01",
-      materialId: "MAT01",
-      name: "Fahrrad",
+      id: "MAT30",
+      materialId: "MAT30",
+      name: "Radar",
       produktTyp: "Fertigerzeugnis",
       relativePosition: {
         posX: 0,
@@ -58,12 +176,12 @@ function pushNewData2() {
         rotW: 0,
       },
       parent: "",
-      children: ["MAT02", "MAT051", "MAT052"]
+      children: ["MAT10", "MAT21", "MAT22"]
     },
     {
-      id: "MAT02",
-      materialId: "MAT02",
-      name: "ZSB_Rahmen",
+      id: "MAT10",
+      materialId: "MAT10",
+      name: "Radar_BackEnd",
       produktTyp: "Halberzeugnis",
       relativePosition: {
         posX: 0,
@@ -76,13 +194,13 @@ function pushNewData2() {
         rotZ: 0,
         rotW: 0,
       },
-      parent: "MAT01",
-      children: ["MAT03", "MAT0411", "MAT042", "MAT043", "MAT044"]
+      parent: "MAT30",
+      children: ["MAT11", "MAT12", "MAT13"]
     },
     {
-      id: "MAT03",
-      materialId: "MAT03",
-      name: "Rahmen",
+      id: "MAT21",
+      materialId: "MAT21",
+      name: "Gehäuse",
       produktTyp: "Rohmaterial",
       relativePosition: {
         posX: 0,
@@ -95,13 +213,13 @@ function pushNewData2() {
         rotZ: 0,
         rotW: 0,
       },
-      parent: "MAT02",
+      parent: "MAT30",
       children: []
     },
     {
-      id: "MAT0411",
-      materialId: "MAT041",
-      name: "Pedal",
+      id: "MAT22",
+      materialId: "MAT22",
+      name: "Peripherie",
       produktTyp: "Rohmaterial",
       relativePosition: {
         posX: 0,
@@ -114,13 +232,13 @@ function pushNewData2() {
         rotZ: 0,
         rotW: 0,
       },
-      parent: "MAT02",
+      parent: "MAT30",
       children: []
     },
     {
-      id: "MAT0412",
-      materialId: "MAT041",
-      name: "Pedal",
+      id: "MAT11",
+      materialId: "MAT11",
+      name: "PCB",
       produktTyp: "Rohmaterial",
       relativePosition: {
         posX: 0,
@@ -133,13 +251,13 @@ function pushNewData2() {
         rotZ: 0,
         rotW: 0,
       },
-      parent: "MAT02",
+      parent: "MAT10",
       children: []
     },
     {
-      id: "MAT042",
-      materialId: "MAT042",
-      name: "Bremse",
+      id: "MAT12",
+      materialId: "MAT12",
+      name: "Lötpaste",
       produktTyp: "Rohmaterial",
       relativePosition: {
         posX: 0,
@@ -152,13 +270,13 @@ function pushNewData2() {
         rotZ: 0,
         rotW: 0,
       },
-      parent: "MAT02",
+      parent: "MAT10",
       children: [],
     },
     {
-      id: "MAT043",
-      materialId: "MAT043",
-      name: "Gangschaltung",
+      id: "MAT13",
+      materialId: "MAT13",
+      name: "Elektrische_Bauelemente",
       produktTyp: "Rohmaterial",
       relativePosition: {
         posX: 0,
@@ -171,73 +289,16 @@ function pushNewData2() {
         rotZ: 0,
         rotW: 0,
       },
-      parent: "MAT02",
+      parent: "MAT10",
       children: [],
-    },
-    {
-      id: "MAT044",
-      materialId: "MAT044",
-      name: "Lenker",
-      produktTyp: "Rohmaterial",
-      relativePosition: {
-        posX: 0,
-        posY: 0,
-        posZ: 0,
-      },
-      relativeRotation: {
-        rotX: 0,
-        rotY: 0,
-        rotZ: 0,
-        rotW: 0,
-      },
-      parent: "MAT02",
-      children: [],
-    },
-    {
-      id: "MAT051",
-      materialId: "MAT05",
-      name: "Reifen",
-      produktTyp: "Rohmaterial",
-      relativePosition: {
-        posX: 0,
-        posY: 0,
-        posZ: 0,
-      },
-      relativeRotation: {
-        rotX: 0,
-        rotY: 0,
-        rotZ: 0,
-        rotW: 0,
-      },
-      parent: "MAT01",
-      children: [],
-    },
-    {
-      id: "MAT052",
-      materialId: "MAT05",
-      name: "Reifen",
-      produktTyp: "Rohmaterial",
-      relativePosition: {
-        posX: 0,
-        posY: 0,
-        posZ: 0,
-      },
-      relativeRotation: {
-        rotX: 0,
-        rotY: 0,
-        rotZ: 0,
-        rotW: 0,
-      },
-      parent: "MAT01",
-      children: [],
-    }
+    }  
   );
 }
-function pushNewData() {
-  ebomData.push({
-    id: "MAT01",
-    materialId: "MAT01",
-    name: "Fahrrad",
+function pushEBOM() {  
+  ebomData.push({    
+    id: "MAT30",
+    materialId: "MAT30",
+    name: "Radar",
     produktTyp: "Fertigerzeugnis",
     relativePosition: {
       posX: 0,
@@ -252,9 +313,9 @@ function pushNewData() {
     },
     children: [
       {
-        id: "MAT02",
-        materialId: "MAT02",
-        name: "ZSB_Rahmen",
+        id: "MAT10",
+        materialId: "MAT10",
+        name: "Radar_BackEnd",
         produktTyp: "Halberzeugnis",
         relativePosition: {
           posX: 0,
@@ -269,9 +330,9 @@ function pushNewData() {
         },
         children: [
           {
-            id: "MAT03",
-            materialId: "MAT03",
-            name: "Rahmen",
+            id: "MAT11",
+            materialId: "MAT11",
+            name: "PCB",
             produktTyp: "Rohmaterial",
             relativePosition: {
               posX: 0,
@@ -284,12 +345,32 @@ function pushNewData() {
               rotZ: 0,
               rotW: 0,
             },
+            parent: "MAT10",
+            children: []
+          },
+          {
+            id: "MAT12",
+            materialId: "MAT12",
+            name: "Lötpaste",
+            produktTyp: "Rohmaterial",
+            relativePosition: {
+              posX: 0,
+              posY: 0,
+              posZ: 0,
+            },
+            relativeRotation: {
+              rotX: 0,
+              rotY: 0,
+              rotZ: 0,
+              rotW: 0,
+            },
+            parent: "MAT10",
             children: [],
           },
           {
-            id: "MAT0411",
-            materialId: "MAT041",
-            name: "Pedal",
+            id: "MAT13",
+            materialId: "MAT13",
+            name: "Elektrische_Bauelemente",
             produktTyp: "Rohmaterial",
             relativePosition: {
               posX: 0,
@@ -302,86 +383,15 @@ function pushNewData() {
               rotZ: 0,
               rotW: 0,
             },
+            parent: "MAT10",
             children: [],
-          },
-          {
-            id: "MAT0412",
-            materialId: "MAT041",
-            name: "Pedal",
-            produktTyp: "Rohmaterial",
-            relativePosition: {
-              posX: 0,
-              posY: 0,
-              posZ: 0,
-            },
-            relativeRotation: {
-              rotX: 0,
-              rotY: 0,
-              rotZ: 0,
-              rotW: 0,
-            },
-            children: [],
-          },
-          {
-            id: "MAT042",
-            materialId: "MAT042",
-            name: "Bremse",
-            produktTyp: "Rohmaterial",
-            relativePosition: {
-              posX: 0,
-              posY: 0,
-              posZ: 0,
-            },
-            relativeRotation: {
-              rotX: 0,
-              rotY: 0,
-              rotZ: 0,
-              rotW: 0,
-            },
-            children: [],
-          },
-          {
-            id: "MAT043",
-            materialId: "MAT043",
-            name: "Gangschaltung",
-            produktTyp: "Rohmaterial",
-            relativePosition: {
-              posX: 0,
-              posY: 0,
-              posZ: 0,
-            },
-            relativeRotation: {
-              rotX: 0,
-              rotY: 0,
-              rotZ: 0,
-              rotW: 0,
-            },
-            children: [],
-          },
-          {
-            id: "MAT044",
-            materialId: "MAT044",
-            name: "Lenker",
-            produktTyp: "Rohmaterial",
-            relativePosition: {
-              posX: 0,
-              posY: 0,
-              posZ: 0,
-            },
-            relativeRotation: {
-              rotX: 0,
-              rotY: 0,
-              rotZ: 0,
-              rotW: 0,
-            },
-            children: [],
-          },
+          },               
         ],
       },
-      {
-        id: "MAT051",
-        materialId: "MAT05",
-        name: "Reifen",
+      {        
+        id: "MAT21",
+        materialId: "MAT21",
+        name: "Gehäuse",
         produktTyp: "Rohmaterial",
         relativePosition: {
           posX: 0,
@@ -394,12 +404,12 @@ function pushNewData() {
           rotZ: 0,
           rotW: 0,
         },
-        children: [],
+        children: []
       },
       {
-        id: "MAT052",
-        materialId: "MAT05",
-        name: "Reifen",
+        id: "MAT22",
+        materialId: "MAT22",
+        name: "Peripherie",
         produktTyp: "Rohmaterial",
         relativePosition: {
           posX: 0,
@@ -412,8 +422,8 @@ function pushNewData() {
           rotZ: 0,
           rotW: 0,
         },
-        children: [],
-      },
+        children: []
+      },  
     ],
   });
 }
@@ -421,6 +431,7 @@ function pushNewData() {
 router.route("/").get(async (req, res) => {
   res.render("plmSystem", {
     bom: ebomData,
+    process: productionTaskStammdaten,
   });
 });
 

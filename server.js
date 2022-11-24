@@ -33,6 +33,15 @@ app.use("/plmSystem", plmRouter);
 const crmRouter = require("./api/routes/EnterpriseITSimulation/crmSystem");
 app.use("/crmSystem", crmRouter);
 
+const financesRouter = require("./api/routes/EnterpriseITSimulation/financesSystem");
+app.use("/financesSystem", financesRouter);
+
+const equipmentRouter = require("./api/routes/EnterpriseITSimulation/equipmentSystem").router;
+app.use("/equipmentSystem", equipmentRouter);
+
+const mesRouter = require("./api/routes/EnterpriseITSimulation/mes");
+app.use("/mes", mesRouter);
+
 app.get("/", function (req, res) {
   res.render("index");
 });

@@ -1,7 +1,15 @@
 var dgram = require("dgram");
 const { send } = require("process");
-const router = require("express").Router();
-("use strict");
+const router = require("express").Router();("use strict");
+
+const { Kafka, Partitioners } = require("kafkajs")
+const clientId = "manufacturing-execution-system"
+const brokers = ["localhost:9092"]
+const kafka = new Kafka({ clientId, brokers })
+const consumer = kafka.consumer({ groupId: clientId })
+const producer = kafka.producer({ createPartitioner: Partitioners.LegacyPartitioner })
+
+
 
 const fs = require('fs');
 
@@ -14,10 +22,13 @@ const results = {}; // Or just '{}', an empty object
 var clients = [];
 var syncObjects = [];
 
+var clientLeader; // the client that controls Physics and Motion Simulation
 
-initData("SyncObjects.json");
+setTimeout(function() { initData("SyncObjects.json"); }, 1000);
+
 // Es wird ebomData aus der Datenbank gelesen, wenn Einträge vorhanden sind, diese nehmen, ansonsten generischen Inhalt einfüllen
-function initData (path, type){  
+function initData (path, type){ 
+  // erst Speicherstand abfragen
   try {
     if (fs.existsSync(path)) {
       let rawdata = fs.readFileSync(path);
@@ -30,7 +41,78 @@ function initData (path, type){
   } catch(err) {
     console.error(err)
   }  
+
+  // jetzt bestehendes Equipment anfragen und hinzufügen, falls nicht gespeichert
+  var equipment = require("../EnterpriseITSimulation/equipmentSystem").equipment;
+  for (var i = 0; i < equipment.length; i++){
+    var isNew = true;
+    for (var j = 0; j < syncObjects.length; j++){
+      if (syncObjects[j].ID == (i+1)*100){
+        isNew = false;
+        break;
+      }
+    }
+    if (!isNew){
+      continue;
+    }
+    var obj = {};
+    obj.type = "SpawnInfo";
+    obj.ID = (i+1)*100;
+    obj.prefabName = equipment[i].name;
+    obj.name = equipment[i].name + equipment[i].equipmentId;
+    obj.equipmentId = equipment[i].equipmentId;
+    obj.posX = equipment[i].position.posX;
+    obj.posY = equipment[i].position.posY;
+    obj.posZ = equipment[i].position.posZ;
+    obj.rotX = equipment[i].rotation.rotX;
+    obj.rotY = equipment[i].rotation.rotY;
+    obj.rotZ = equipment[i].rotation.rotZ;
+    obj.rotW = equipment[i].rotation.rotW;
+    obj.scaleX = equipment[i].scale.scaleX;
+    obj.scaleY = equipment[i].scale.scaleY;
+    obj.scaleZ = equipment[i].scale.scaleZ;
+    obj.syncInfoString = "";
+    obj.parentID = ""; // msg.parentID;
+    syncObjects.push(obj);
+  }
+  
+  console.log("All SyncObjects: " +  JSON.stringify(syncObjects));
 }
+
+
+const produce = async (topic, data, parameter) => {
+	await producer.connect()
+  // console.log("Sending: " + JSON.stringify(data)); 
+  try {
+    await producer.send({
+      topic: topic,
+      messages: [
+        {
+          key: "Nachricht",
+          value: JSON.stringify({"id": data.id, "productionResponse":data.simulationRequest, "eventKey":"productionResponse" ,"Nachricht": parameter}),
+        },
+      ],
+    })
+  } catch (err) {
+    console.error("could not write message " + err)
+  }
+}
+
+const consume = async () => {
+	await consumer.connect()
+	await consumer.subscribe({topics: ["message-production"]})
+	await consumer.run({ 
+		eachMessage:  async ({message}) => { console.log(message.value) },  
+  })
+}
+
+
+consume().catch((err) => {
+	console.error("error in consumer: ", err)
+})
+
+
+
 
 router.route("/").get((req, res) => {
   // res.json(["Tony", "Lisa", "Michael", "Ginger", "Food"]);
@@ -138,6 +220,7 @@ function registerClient(msg, remote) {
   }
   if (addNew) {
     console.log("Neuen Client hinzufügen");
+    
     var client = {};
     client.address = remote.address;
     client.port = msg.port;
@@ -146,6 +229,11 @@ function registerClient(msg, remote) {
     clients.push(client);
     console.log(client);
     sendAllObjects(clients.length - 1, "SpawnInfo");
+    // erster Client
+    if (clients.length == 1){
+      clientLeader = remote.address;
+      informClientLeader();
+    }
   }
 }
 
@@ -158,6 +246,7 @@ function sendAllObjects(i, mode) {
     obj.bla = "Test";
     obj.ID = syncObjects[j].ID;
     obj.prefabName = syncObjects[j].prefabName;
+    if (syncObjects[j].equipmentId != null)  obj.equipmentId = syncObjects[j].equipmentId;
     obj.name = syncObjects[j].name;
     obj.posX = syncObjects[j].posX;
     obj.posY = syncObjects[j].posY;
@@ -320,8 +409,9 @@ router.route("/saveData").post((req, res) => {
   } catch (err) {
     console.error(err);
   }
-  res.redirect("/unityServer");
+  res.send ("Session saved successfully");
 });
+
 function deleteClient (clientIdx){
    for (var i = 0; i < syncObjects.length; i++) {
     if (clients[clientIdx] != null && clients[clientIdx].playerPrefabID == syncObjects[i].ID){
@@ -357,6 +447,17 @@ function deleteItem (itemID){
       syncObjects.splice(i, 1);
       break;
     }
+  }
+}
+
+function informClientLeader (){
+  for (var j = 0; j < clients.length; j++) {
+    if (clients[j].address == clientLeader){
+      var obj = {};
+      obj.type = "InformClientLeadership";
+      sendUDP(clients[j].address, clients[j].port, clients[j].name, obj);
+      break;
+    }    
   }
 }
 

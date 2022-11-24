@@ -1,0 +1,59 @@
+<%- include('partials/header') %>
+
+Dies ist das Manufacturing Resource System
+
+<div class="col ms-auto">
+    Equipment-Status:
+    <table border="1">
+        <tr>
+            <th width=500 style="background-color:#1c87c9;">Equipment-Name</th>
+            <th width=300 style="background-color:#1c87c9;">ID</th>
+            <th width=300 style="background-color:#1c87c9;">Aktueller Task</th>
+            <th width=300 style="background-color:#1c87c9;">Status</th>
+        </tr>
+    <% for (var i = 0; i < equipmentStatus.length; i++) { %>
+        <tr>
+            <th width=500 > <%= equipmentStatus[i].equipmentName %> </th>
+            <th width=300 > <%= equipmentStatus[i].equipmentID %> </th>
+            <th width=300 > <%= equipmentStatus[i].occupationTaskID %> </th>
+            <th width=300 > <%= equipmentStatus[i].occupationStatus %> </th>
+        </tr>
+    <% } %>
+    </table>
+    <br>
+    Aufgaben-Status:
+    <table border="1">
+        <tr>
+            <th width=300 style="background-color:#1c87c9;">Task-ID</th>
+            <th width=300 style="background-color:#1c87c9;">Task-Status</th>
+            <th width=300 style="background-color:#1c87c9;">Ressource-ID</th>
+            <th width=300 style="background-color:#1c87c9;">Produkt-Inputs</th>
+            <th width=300 style="background-color:#1c87c9;">Produkt-Outputs</th>
+            <th width=300 style="background-color:#1c87c9;">Prozess-ID</th>
+            <th width=300 style="background-color:#1c87c9;">Status-History</th>
+        </tr>
+    <% for (var i = 0; i < productionTasks.length; i++) { %>
+        <tr>
+            <th width=300 > <%= productionTasks[i].taskID %> </th>
+            <th width=300 > <%= productionTasks[i].taskStatus %> </th>
+            <th width=300 > <%= productionTasks[i].ressourceID %> </th>
+            <th width=300 > <% for (var j = 0; j < productionTasks[i].inputProducts.length; j++) { %>
+                <%= productionTasks[i].inputProducts[j].materialstamm %> %>
+                <% if (productionTasks[i].inputProducts[j].produktId!="") { %> : <%= productionTasks[i].inputProducts[j].produktId %> <% } %>
+                <% if (productionTasks[i].inputProducts.length > 1) { %> , <% } %>
+                
+            <% } %> </th>
+            <th width=300 > <% for (var j = 0; j < productionTasks[i].outputProducts.length; j++) { %>
+                <%= productionTasks[i].outputProducts[j].materialstamm %> %> 
+                <% if (productionTasks[i].outputProducts[j].produktId!="") { %> : <%= productionTasks[i].outputProducts[j].produktId %> <% } %>
+                <% if (productionTasks[i].outputProducts.length > 1) { %> , <% } %>
+            <% } %> </th>
+            <th width=300 > <%= productionTasks[i].processID %> </th>
+            <th width=300 > <% for (var j = 0; j < productionTasks[i].taskHistory.length; j++) { %>
+                <%= productionTasks[i].taskHistory[j].status %>: <%= productionTasks[i].taskHistory[j].time %>
+
+            <% } %> </th>
+        </tr>
+    <% } %>
+    </table>
+</div> 

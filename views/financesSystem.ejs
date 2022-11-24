@@ -1,0 +1,22 @@
+<%- include('partials/header') %>
+
+Dies ist das Finanzen-System
+
+<div class="col ms-auto">
+    Balance: <%= balance %>
+    <br>
+    <table border="1">
+        <tr>
+            <th width=500 style="background-color:#1c87c9;">Beschreibung</th>
+            <th width=300 style="background-color:#1c87c9;">Betrag (Euro)</th>
+            <th width=300 style="background-color:#1c87c9;">Kontakt</th>
+        </tr>
+    <% for (var i = 0; i < transactions.length; i++) { %>
+        <tr>
+            <th width=500 > <%= transactions[i].beschreibung %> </th>
+            <th width=300 > <%= transactions[i].betrag %> </th>
+            <th width=300 > <%= transactions[i].kontakt %> </th>
+        </tr>
+    <% } %>
+    </table>
+</div> 

@@ -59,70 +59,56 @@ function initData (path, type){
 function pushNewData (type){
   if (type == "materialStammdaten"){
     materialStammdaten.push(
-      { itemId: "MAT01", itemName: "Fahrrad" },
-      { itemId: "MAT02", itemName: "ZSB_Rahmen" },
-      { itemId: "MAT03", itemName: "Rahmen" },
-      { itemId: "MAT041", itemName: "Pedal" },
-      { itemId: "MAT042", itemName: "Bremse" },
-      { itemId: "MAT043", itemName: "Gangschaltung" },
-      { itemId: "MAT044", itemName: "Lenker" },
-      { itemId: "MAT05", itemName: "Reifen" }
+      { itemId: "MAT10", itemName: "Radar_BackEnd" },
+      { itemId: "MAT30", itemName: "Radar" },
+      { itemId: "MAT11", itemName: "PCB" },
+      { itemId: "MAT12", itemName: "Lötpaste" },
+      { itemId: "MAT13", itemName: "Elektrische_Bauelemente" },
+      { itemId: "MAT21", itemName: "Gehäuse" },
+      { itemId: "MAT22", itemName: "Peripherie" }
     );
   }
   else if (type == "lieferanten"){
     lieferantenData.push(
       {
-        name: "Metall AG",
-        lieferMatName: "Rahmen",
-        lieferMatId: "MAT03",
+        name: "Metall Components AG",
+        lieferMatName: "PCB",
+        lieferMatId: "MAT11",
         lieferKonditionen: [
-          { stk: 1, preisProStk: 140, einheit: "EUR" },
-          { stk: 10, preisProStk: 120, einheit: "EUR" },
+          { stk: 10, preisProStk: 1, einheit: "EUR" }
         ],
         lieferDauerTage: 3,
       },
       {
-        name: "Fahrradkomponenten GmbH",
-        lieferMatId: "MAT041",
-        lieferMatName: "Pedal",
+        name: "Pasten GmbH",
+        lieferMatId: "MAT12",
+        lieferMatName: "Lötpaste",
         lieferKonditionen: [
-          { stk: 1, preisProStk: 10, einheit: "EUR" },
-          { stk: 20, preisProStk: 7, einheit: "EUR" },
+          { stk: 100, preisProStk: 1, einheit: "EUR" }
         ],
         lieferDauerTage: 3,
       },
       {
-        name: "Fahrradkomponenten GmbH",
-        lieferMatId: "MAT042",
-        lieferMatName: "Bremse",
+        name: "DigiKey",
+        lieferMatId: "MAT13",
+        lieferMatName: "Elektrische_Bauelemente",
         lieferKonditionen: [
-          { stk: 1, preisProStk: 20, einheit: "EUR" },
-          { stk: 10, preisProStk: 18, einheit: "EUR" },
+          { stk: 5, preisProStk: 2, einheit: "EUR" }
         ],
         lieferDauerTage: 3,
       },
       {
-        name: "Fahrradkomponenten GmbH",
-        lieferMatId: "MAT043",
-        lieferMatName: "Gangschaltung",
-        lieferKonditionen: [{ stk: 1, preisProStk: 25, einheit: "EUR" }],
+        name: "Kunststoff Maier GmbH",
+        lieferMatId: "MAT21",
+        lieferMatName: "Gehäuse",
+        lieferKonditionen: [{ stk: 5, preisProStk: 1, einheit: "EUR" }],
         lieferDauerTage: 3,
       },
       {
-        name: "Fahrradkomponenten GmbH",
-        lieferMatId: "MAT044",
-        lieferMatName: "Lenker",
-        lieferKonditionen: [{ stk: 1, preisProStk: 15, einheit: "EUR" }],
-        lieferDauerTage: 3,
-      },
-      {
-        name: "Wheels and More Inc",
-        lieferMatId: "MAT05",
-        lieferMatName: "Reifen",
-        lieferKonditionen: [
-          { stk: 1, preisProStk: 15, einheit: "EUR" },
-          { stk: 50, preisProStk: 11, einheit: "EUR" },
-        ],
+        name: "Kabelkonfektion and More GmbH",
+        lieferMatId: "MAT22",
+        lieferMatName: "Peripherie",
+        lieferKonditionen: [{ stk: 10, preisProStk: 1, einheit: "EUR" }],
         lieferDauerTage: 3,
       }
     );
@@ -133,6 +119,31 @@ router.route("/").get(async (req, res) => {
   res.render("scmSystem", {
     lieferantenData: lieferantenData,
   });
+});
+
+router.route("/supplier/:itemName").get(async (req, res) => {
+  var result = [];
+  var itemName = req.params.itemName;
+
+  for (var i = 0; i < lieferantenData.length; i++){
+    if (lieferantenData[i].lieferMatName == itemName){
+      for (var j = 0; j < lieferantenData[i].lieferKonditionen.length; j++){
+        var resu = [];
+        
+        
+        resu.push (
+          lieferantenData[i].lieferKonditionen[j]
+        );        
+        result.push ({
+          lieferMatName: lieferantenData[i].lieferMatName,
+          name: lieferantenData[i].name,
+          konditionen: resu
+        })
+      }
+    }
+  }
+
+  res.send(result);
 });
 
 router.route("/").post((req, res) => {
