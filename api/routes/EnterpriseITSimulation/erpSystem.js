@@ -91,9 +91,9 @@ function pushNewData (type){
       { itemId: "MAT10", itemName: "Radar_BackEnd", produktTyp: "Halberzeugnis", typ: "Eigenfertigung"},
       { itemId: "MAT30", itemName: "Radar", produktTyp: "Fertigerzeugnis", typ: "Eigenfertigung"},
       { itemId: "MAT11", itemName: "PCB", produktTyp: "Rohmaterial", typ: "Zukauf"},
-      { itemId: "MAT12", itemName: "Lötpaste", produktTyp: "Rohmaterial", typ: "Zukauf"},
+      { itemId: "MAT12", itemName: "Loetpaste", produktTyp: "Rohmaterial", typ: "Zukauf"},
       { itemId: "MAT13", itemName: "Elektrische_Bauelemente", produktTyp: "Rohmaterial", typ: "Zukauf"},
-      { itemId: "MAT21", itemName: "Gehäuse", produktTyp: "Rohmaterial", typ: "Zukauf"},
+      { itemId: "MAT21", itemName: "Gehaeuse", produktTyp: "Rohmaterial", typ: "Zukauf"},
       { itemId: "MAT22", itemName: "Peripherie", produktTyp: "Rohmaterial", typ: "Zukauf"},
 
       { itemId: "MAT111", itemName: "PCB mit Paste", produktTyp: "Halberzeugnis", typ: "Eigenfertigung"},
@@ -114,7 +114,14 @@ function pushNewData (type){
 
 var auftraege = []; // Enthält alle Aufträge und ihren Bearbeitungsfortschritt
 
-
+router.route("/getProductNameById").get(async (req, res) => {
+  for (var i = 0; i < materialStammdaten.length; i++){
+    if (materialStammdaten[i].itemId == req.params.itemId){
+      res.send (materialStammdaten[i].itemId);
+      break;
+    }
+  }
+});
 
 router.route("/").get(async (req, res) => {
   res.render("erpSystem", {
@@ -140,10 +147,10 @@ router.route("/saveData").post((req, res) => {
 });
 
 
-router.route("/warePruefen/:itemName/:itemAnzahl/:lagerortId").get(async (req, res) => {
+router.route("/warePruefen/:itemId/:itemAnzahl/:lagerortId").get(async (req, res) => {
   var result = {};
   result.itemAvailable = verfügbarkeitPrüfen(
-    req.params.itemName,
+    req.params.itemId,
     req.params.itemAnzahl,
     req.params.lagerortId
   );
@@ -151,10 +158,10 @@ router.route("/warePruefen/:itemName/:itemAnzahl/:lagerortId").get(async (req, r
   res.send(result);
 });
 
-function verfügbarkeitPrüfen(itemName, itemAnzahl, lagerortId) {
+function verfügbarkeitPrüfen(itemId, itemAnzahl, lagerortId) {
   var itemAvailable = false;
   for (var i = 0; i < inventory.length; i++) {
-    if (inventory[i].itemName == itemName && inventory[i].lagerortId == lagerortId) {
+    if (inventory[i].itemId == itemId && inventory[i].lagerortId == lagerortId) {
       if (inventory[i].itemAnzahl >= parseInt(itemAnzahl)) {
         itemAvailable = true;
         break;
@@ -265,9 +272,10 @@ router.route("/wareVerbuchen").post((req, res) => {
   var itemName = req.body.itemName;
   var itemAnzahl = req.body.itemAnzahl;
   var lagerortId = req.body.lagerortId;
+  var itemId = req.body.itemId;
   var placeNew = true;
   for (var i = 0; i < inventory.length; i++) {
-    if (inventory[i].itemName == itemName && inventory[i].lagerortId == lagerortId) {
+    if ((itemId == null && inventory[i].itemName == itemName || inventory[i].itemId == itemId) && inventory[i].lagerortId == lagerortId) {
       inventory[i].itemAnzahl += parseInt(itemAnzahl);
       placeNew = false;      
       break;
@@ -278,23 +286,25 @@ router.route("/wareVerbuchen").post((req, res) => {
     newItem.itemName = itemName.toString();
     newItem.itemAnzahl = parseInt(itemAnzahl);
     newItem.lagerortId = lagerortId.toString();
+    if (itemId != null) newItem.itemId = itemId.toString();
+    else newItem.itemId = "";
+    
     inventory.push(newItem);
   }
-  console.log("Adding: " + JSON.stringify(req.body))
-  console.log("Added Item successfully!")
-  res.status(201).json({
-    message: 'Thing created successfully!'
-  });
+  console.log("Added successfully: " + JSON.stringify(req.body))
+  res.send ()
 });
 
 router.route("/wareEntnehmen").post((req, res) => {
   console.log("Removing: " + JSON.stringify(req.body))
   var itemName = req.body.itemName;
+  var itemId = req.body.itemId;
+ 
   var itemAnzahl = req.body.itemAnzahl;
   var lagerortId = req.body.lagerortId;  
   var success = false;
   for (var i = 0; i < inventory.length; i++) {
-    if (inventory[i].itemName == itemName && inventory[i].lagerortId == lagerortId) {
+    if ((itemId == null && inventory[i].itemName == itemName || inventory[i].itemId == itemId) && inventory[i].lagerortId == lagerortId) {
       inventory[i].itemAnzahl -= parseInt(itemAnzahl);
       if (inventory[i].itemAnzahl <= 0) {
         inventory.splice(i, 1);

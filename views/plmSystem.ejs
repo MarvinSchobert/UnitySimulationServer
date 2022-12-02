@@ -65,13 +65,19 @@ Dies ist das PLM System
                 Itemname: <%= bom[i].name %><br>
                 Item ID: <%= bom[i].id %><br>
                 Produkttyp: <%= bom[i].produktTyp %><br>  
+                <img src= <%= bom[i].imgSource %> width=100px height=100px> 
+                <a href="http://localhost:3000/plmSystem/getEBOM/<%=bom[i].name%>">Show EBOM</a>
+                <a href="http://localhost:3000/plmSystem/getMBOM/<%=bom[i].name%>">Show MBOM</a>
                 <% for (var j = 0; j < bom[i].children.length; j++) { %>
                     <details open class="col-lg-12 card">
                         <summary> <%= bom[i].children[j].name %> </summary>
                         <div>
                             Itemname: <%= bom[i].children[j].name %> <br>
                             Item ID: <%= bom[i].children[j].id %><br>
-                            Produkttyp: <%= bom[i].children[j].produktTyp %><br>                            
+                            Produkttyp: <%= bom[i].children[j].produktTyp %><br>      
+                            <img src= <%= bom[i].children[j].imgSource %> width=100px height=100px> 
+                            <a href="http://localhost:3000/plmSystem/getEBOM/<%=bom[i].children[j].name%>">Show EBOM</a>
+                            <a href="http://localhost:3000/plmSystem/getMBOM/<%=bom[i].children[j].name%>">Show MBOM</a>                      
                             <% for (var k = 0; k < bom[i].children[j].children.length; k++) { %>
                                 <details open class="col-lg-12 card">
                                     <summary> <%= bom[i].children[j].children[k].name %> </summary>
@@ -79,6 +85,9 @@ Dies ist das PLM System
                                         Itemname: <%= bom[i].children[j].children[k].name %> <br>
                                         Item ID: <%= bom[i].children[j].children[k].id %> <br>
                                         Produkttyp: <%= bom[i].children[j].children[k].produktTyp %> <br>
+                                        <img src= <%= bom[i].children[j].children[k].imgSource %> width=100px height=100px>  
+                                        <a href="http://localhost:3000/plmSystem/getEBOM/<%=bom[i].children[j].children[k].name%>">Show EBOM</a>
+                                        <a href="http://localhost:3000/plmSystem/getMBOM/<%=bom[i].children[j].children[k].name%>">Show MBOM</a>
                                         <% for (var l = 0; l < bom[i].children[j].children[k].children.length; l++) { %>
                                             <details open class="col-lg-12 card">
                                                 <summary> <%= bom[i].children[j].children[k].children[l].name %> </summary>
@@ -86,7 +95,9 @@ Dies ist das PLM System
                                                     Itemname: <%= bom[i].children[j].children[k].children[l].name %> <br>
                                                     Item ID: <%= bom[i].children[j].children[k].children[l].id %> <br>
                                                     Produkttyp: <%= bom[i].children[j].children[k].children[l].produktTyp %> <br>
-                                                    
+                                                    <img src= <%= bom[i].children[j].children[k].children[l].imgSource %> width=100px height=100px>  
+                                                    <a href="http://localhost:3000/plmSystem/getEBOM/<%=bom[i].children[j].children[k].children[l].name%>">Show EBOM</a>
+                                                    <a href="http://localhost:3000/plmSystem/getMBOM/<%=bom[i].children[j].children[k].children[l].name%>">Show MBOM</a>
                                                 </div>
                                             </details>    
                                         <% } %>

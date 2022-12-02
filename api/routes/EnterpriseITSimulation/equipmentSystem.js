@@ -65,6 +65,9 @@ function pushNewData (type){
         ruestzeit: 0,
         changeDate: (new Date("2022-12-18T16:53:21.817Z")).toString(),
         revision: 1,
+        verantwortlicher: "Schobert",
+        linie: "LINIE01",
+        werk: "MUENCHEN01",
         status: "Serie",
         position: {
         posX: 3.84,
@@ -89,6 +92,9 @@ function pushNewData (type){
         ruestzeit: 10000,
         changeDate: (new Date("2022-12-18T16:53:21.817Z")).toString(),
         revision: 1,
+        verantwortlicher: "Schobert",
+        linie: "LINIE01",
+        werk: "MUENCHEN01",
         status: "Serie",
         position: {
         posX: 6.39,
@@ -113,6 +119,9 @@ function pushNewData (type){
           ruestzeit: 10000,
           changeDate: (new Date("2022-12-18T16:53:21.817Z")).toString(),
           revision: 1,
+          verantwortlicher: "Schobert",
+          linie: "LINIE01",
+          werk: "MUENCHEN01",
           status: "Serie",
           position: {
           posX: 6.39,
@@ -137,6 +146,9 @@ function pushNewData (type){
         ruestzeit: 0,
         changeDate: (new Date("2022-12-18T16:53:21.817Z")).toString(),
         revision: 1,
+        verantwortlicher: "Schobert",
+        linie: "LINIE01",
+        werk: "MUENCHEN01",
         status: "Serie",
         position: {
           posX: 6.43,
@@ -161,6 +173,9 @@ function pushNewData (type){
         ruestzeit: 10000,
         changeDate: (new Date("2022-12-18T16:53:21.817Z")).toString(),
         revision: 1,
+        verantwortlicher: "Schobert",
+        linie: "LINIE01",
+        werk: "MUENCHEN01",
         status: "Serie",
         position: {
           posX: 6.48,
@@ -185,6 +200,9 @@ function pushNewData (type){
         ruestzeit: 0,
         changeDate: (new Date("2022-12-18T16:53:21.817Z")).toString(),
         revision: 1,
+        verantwortlicher: "Schobert",
+        linie: "LINIE01",
+        werk: "MUENCHEN01",
         status: "Serie",
         position: {
           posX: 6.45,
@@ -209,6 +227,9 @@ function pushNewData (type){
         ruestzeit: 0,
         changeDate: (new Date("2022-12-18T16:53:21.817Z")).toString(),
         revision: 1,
+        verantwortlicher: "Schobert",
+        linie: "LINIE01",
+        werk: "MUENCHEN01",
         status: "Serie",
         position: {
           posX: 6.36,
@@ -233,6 +254,9 @@ function pushNewData (type){
         ruestzeit: 0,
         changeDate: (new Date("2022-12-18T16:53:21.817Z")).toString(),
         revision: 1,
+        verantwortlicher: "Schobert",
+        linie: "LINIE01",
+        werk: "MUENCHEN01",
         status: "Serie",
         position: {
           posX: 0,
@@ -256,9 +280,31 @@ function pushNewData (type){
 }
 
 router.route("/").get(async (req, res) => {
-    
+  var linien = [];
+  for (var i = 0; i < equipment.length; i++){
+    // Linie bereits gespeichert?
+    var exists = false;
+  
+    for (var j = 0; j < linien.length; j++){      
+      if (linien[j].linienName == equipment[i].linie){
+        linien[j].equipment.push(equipment[i]);
+        exists = true;
+        break;
+      }
+    }
+
+    if (!exists){
+      var item  = {
+        linienName: equipment[i].linie,
+        werk: equipment[i].werk,
+        equipment: [],
+      };
+      item.equipment.push(equipment[i])
+      linien.push (item);
+    }
+  }
   res.render("equipmentSystem", {
-      equipment: equipment,
+      linien: linien,
     });
 });
 router.route("/data").get(async (req, res) => {

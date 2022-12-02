@@ -4,7 +4,7 @@ var bodyParser = require("body-parser");
 
 app = express();
 port = process.env.PORT || 3000;
-app.listen(port);
+app.listen(port, "0.0.0.0");
 console.log("book list RESTful API server started on: " + port);
 
 app.use(bodyParser.json()); // to support JSON-encoded bodies
@@ -14,6 +14,18 @@ app.use(
     extended: true,
   })
 );
+app.use(function (req, res, next){
+  res.header('Access-Control-Allow-Origin', '*');
+  res.header(
+      'Access-Control-Allow-Headers', 
+      'Origin, X-Requested-With, Content-Type, Accept'
+  );
+  next();
+});
+
+
+
+
 
 const unityRouter = require("./api/routes/UnityService/unityServer");
 app.use("/unityServer", unityRouter);

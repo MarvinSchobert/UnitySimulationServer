@@ -76,35 +76,53 @@ function initData (path, type){
     syncObjects.push(obj);
   }
   
-  console.log("All SyncObjects: " +  JSON.stringify(syncObjects));
+  // console.log("All SyncObjects: " +  JSON.stringify(syncObjects));
 }
 
 
-const produce = async (topic, data, parameter) => {
+const produceKafkaProductionAck = async (taskId) => {
 	await producer.connect()
-  // console.log("Sending: " + JSON.stringify(data)); 
   try {
     await producer.send({
-      topic: topic,
+      topic: "productionTopic",
       messages: [
         {
           key: "Nachricht",
-          value: JSON.stringify({"id": data.id, "productionResponse":data.simulationRequest, "eventKey":"productionResponse" ,"Nachricht": parameter}),
+          value: JSON.stringify({"id": taskId, "eventKey":"productionResponse"}),
         },
       ],
     })
+    console.log("Sending successful");
+    console.log(JSON.stringify({"id": taskId, "eventKey":"productionResponse"}));
   } catch (err) {
     console.error("could not write message " + err)
   }
+
+  // try {
+  //   await producer.send({
+  //     topic: "messageorder",
+  //     messages: [
+  //       {
+  //         key: "Nachricht",
+  //         value: JSON.stringify({"id": taskId, "eventKey":"message order"}),
+  //       },
+  //     ],
+  //   })
+  //   console.log("Sending successful");
+  // } catch (err) {
+  //   console.error("could not write message " + err)
+  // }
 }
 
 const consume = async () => {
 	await consumer.connect()
-	await consumer.subscribe({topics: ["message-production"]})
+	await consumer.subscribe({topics: ["productionTopic", "messageorder"]})
 	await consumer.run({ 
-		eachMessage:  async ({message}) => { console.log(message.value) },  
+		eachMessage:  async ({message}) => { console.log(JSON.stringify (JSON.parse(message.value))) },  
   })
 }
+
+
 
 
 consume().catch((err) => {
@@ -112,7 +130,10 @@ consume().catch((err) => {
 })
 
 
-
+router.route("/produce").post((req, res) => {
+  produceKafkaProductionAck ("task1234");
+  res.send ("ok")
+});
 
 router.route("/").get((req, res) => {
   // res.json(["Tony", "Lisa", "Michael", "Ginger", "Food"]);
@@ -170,6 +191,12 @@ server.on("message", function (message, remote) {
   // Variable synchronisieren
   if (msg.type == "SyncVarRqt") {
     syncVar(msg, remote);
+  }
+
+  if (msg.type == "FinishedProdRqt"){
+    var id = msg["taskId"];
+    console.log("Producing Ack for " + id);
+    produceKafkaProductionAck (id);
   }
 
   // Client löschen:

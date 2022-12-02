@@ -3,23 +3,27 @@
 Dies ist das Equipment-System
 
 <div class="col ms-auto">
-    <br>
-    <table border="1">
-        <tr>
-            <th width=500 style="background-color:#1c87c9;">Name</th>
-            <th width=300 style="background-color:#1c87c9;">ID</th>
-            <th width=300 style="background-color:#1c87c9;">Revision</th>
-            <th width=300 style="background-color:#1c87c9;">Änderungsdatum</th>
-            <th width=300 style="background-color:#1c87c9;">Status</th>
-        </tr>
-    <% for (var i = 0; i < equipment.length; i++) { %>
-        <tr>
-            <th width=500 > <%= equipment[i].name %> </th>
-            <th width=300 > <%= equipment[i].equipmentId %> </th>
-            <th width=300 > <%= equipment[i].revision %> </th>
-            <th width=300 > <%= equipment[i].changeDate %> </th>
-            <th width=300 > <%= equipment[i].status %> </th>
-        </tr>
-    <% } %>
-    </table>
+    <% for (var l = 0; l < linien.length; l++) { %>    
+        <br>
+        <table border="1">
+            <tr style="background-color:#1c87c9;">Werkname: <%= linien[l].werk %> </tr>
+            <tr style="background-color:#1c87c9;">Linienname: <%= linien[l].linienName %> </tr>
+            <tr>
+                <th width=500 style="background-color:#1c87c9;">Name</th>
+                <th width=300 style="background-color:#1c87c9;">ID</th>
+                <th width=300 style="background-color:#1c87c9;">Revision</th>
+                <th width=300 style="background-color:#1c87c9;">Änderungsdatum</th>
+                <th width=300 style="background-color:#1c87c9;">Status</th>
+            </tr>
+        <% for (var i = 0; i < linien[l].equipment.length; i++) { %>
+            <tr>
+                <th width=500 > <%= linien[l].equipment[i].name %> </th>
+                <th width=300 > <%= linien[l].equipment[i].equipmentId %> </th>
+                <th width=300 > <%= linien[l].equipment[i].revision %> </th>
+                <th width=300 > <%= linien[l].equipment[i].changeDate %> </th>
+                <th width=300 > <%= linien[l].equipment[i].status %> </th>
+            </tr>
+        <% } %>
+        </table>
+    <% } %>    
 </div> 

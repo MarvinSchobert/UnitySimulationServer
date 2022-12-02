@@ -200,7 +200,7 @@ function pushNewData2() {
     {
       id: "MAT21",
       materialId: "MAT21",
-      name: "Gehäuse",
+      name: "Gehauuse",
       produktTyp: "Rohmaterial",
       relativePosition: {
         posX: 0,
@@ -294,12 +294,14 @@ function pushNewData2() {
     }  
   );
 }
+
 function pushEBOM() {  
   ebomData.push({    
     id: "MAT30",
     materialId: "MAT30",
     name: "Radar",
     produktTyp: "Fertigerzeugnis",
+    imgSource: "https://th.bing.com/th/id/OIP.g4lnwUVHlNUj3vihmh7ySgHaHa?pid=ImgDet&rs=1",
     relativePosition: {
       posX: 0,
       posY: 0,
@@ -316,6 +318,7 @@ function pushEBOM() {
         id: "MAT10",
         materialId: "MAT10",
         name: "Radar_BackEnd",
+        imgSource: "https://www.cnx-software.com/wp-content/uploads/2020/12/tiny-mmwave-radar-sensor.jpg",
         produktTyp: "Halberzeugnis",
         relativePosition: {
           posX: 0,
@@ -333,6 +336,7 @@ function pushEBOM() {
             id: "MAT11",
             materialId: "MAT11",
             name: "PCB",
+            imgSource: "https://th.bing.com/th/id/OIP.4a2LD0Y9t0qkxqyKNFFMAAHaFj?pid=ImgDet&rs=1",
             produktTyp: "Rohmaterial",
             relativePosition: {
               posX: 0,
@@ -351,7 +355,8 @@ function pushEBOM() {
           {
             id: "MAT12",
             materialId: "MAT12",
-            name: "Lötpaste",
+            name: "Loetpaste",
+            imgSource: "https://th.bing.com/th/id/OIP.-DTf62EKVCNQYUJZ3Z3f-QAAAA?pid=ImgDet&rs=1",
             produktTyp: "Rohmaterial",
             relativePosition: {
               posX: 0,
@@ -371,6 +376,7 @@ function pushEBOM() {
             id: "MAT13",
             materialId: "MAT13",
             name: "Elektrische_Bauelemente",
+            imgSource: "https://th.bing.com/th/id/OIP.w3T-ro1xy-8yH-WT5VX_mwHaHa?pid=ImgDet&rs=1",
             produktTyp: "Rohmaterial",
             relativePosition: {
               posX: 0,
@@ -391,7 +397,8 @@ function pushEBOM() {
       {        
         id: "MAT21",
         materialId: "MAT21",
-        name: "Gehäuse",
+        name: "Gehaeuse",
+        imgSource: "https://cdn-reichelt.de/bilder/web/xxl_ws/C700/30064456-01.png",
         produktTyp: "Rohmaterial",
         relativePosition: {
           posX: 0,
@@ -410,6 +417,7 @@ function pushEBOM() {
         id: "MAT22",
         materialId: "MAT22",
         name: "Peripherie",
+        imgSource: "https://electronic70.de/images/product_images/original_images/64626_Product.jpg",
         produktTyp: "Rohmaterial",
         relativePosition: {
           posX: 0,
@@ -438,7 +446,7 @@ router.route("/").get(async (req, res) => {
 function findInChildren(obj, itemName, itemId) {
   if (obj != null) {
     for (var i = 0; i < obj.children.length; i++) {
-      if (itemName != "" && obj.children[i].name == itemName || itemId != "" && obj.children[i].id == itemId) {
+      if (itemName != "" && obj.children[i].name == itemName || itemId != "" && obj.children[i].id == itemId ) {
         return obj.children[i];
       } else {
         var res = findInChildren(obj.children[i], itemName);
@@ -465,15 +473,19 @@ function findInChildren(obj, itemName, itemId) {
 }
 
 
+
 router.route("/getEBOM/:itemName").get(async (req, res) => {
   var result = {};
   result.BOM = [];
-  for (var i = 0; i < ebomData2.length; i++) { 
-    if (ebomData2[i].name == req.params.itemName){
-      traverseBOM (i, result);
-      break;
-    }
-  }
+  // for (var i = 0; i < ebomData.length; i++) { 
+  //   if (ebomData[i].name == req.params.itemName){
+  //     traverseBOM (i, result);
+  //     break;
+  //   }
+  // }
+  result.BOM = findInChildren(null, req.params.itemName).children;
+
+
   res.send(result);
 });
 
@@ -482,32 +494,36 @@ router.route("/getMBOM/:itemName").get(async (req, res) => {
   result.BOM = [];
   var temp = {};
   temp.BOM = [];
-  for (var i = 0; i < ebomData2.length; i++) { 
-    if (ebomData2[i].name == req.params.itemName){
-      traverseBOM (i, temp);
-      break;
-    }
-  }
-
+  // for (var i = 0; i < ebomData.length; i++) { 
+  //   if (ebomData[i].name == req.params.itemName){
+  //     traverseBOM (i, temp);
+  //     break;
+  //   }
+  // }
+  temp.BOM = findInChildren(null, req.params.itemName).children;
   for (var i = 0; i < temp.BOM.length; i++){
     var alreadyInResult = false;
-    for (var j = 0; j < result.BOM.length; j++){
-      if (temp.BOM[i].materialId == result.BOM[j].materialId && temp.BOM[i].name != req.params.itemName){
-        result.BOM[j].amount++;
-        alreadyInResult = true;
-        break;
-      }      
-    }
-    if (!alreadyInResult && temp.BOM[i].name != req.params.itemName){
-      result.BOM.push( 
-        { 
-          materialId: temp.BOM[i].materialId,        
-          name: temp.BOM[i].name,
-          produktTyp: temp.BOM[i].produktTyp,
-          amount: 1
-        });
-    }
+
   }
+  // for (var i = 0; i < temp.BOM.length; i++){
+  //   var alreadyInResult = false;
+  //   for (var j = 0; j < result.BOM.length; j++){
+  //     if (temp.BOM[i].materialId == result.BOM[j].materialId && temp.BOM[i].name != req.params.itemName){
+  //       result.BOM[j].amount++;
+  //       alreadyInResult = true;
+  //       break;
+  //     }      
+  //   }
+  //   if (!alreadyInResult && temp.BOM[i].name != req.params.itemName){
+  //     result.BOM.push( 
+  //       { 
+  //         materialId: temp.BOM[i].materialId,        
+  //         name: temp.BOM[i].name,
+  //         produktTyp: temp.BOM[i].produktTyp,
+  //         amount: 1
+  //       });
+  //   }
+  // }
   res.send(result);
 });
 
@@ -516,20 +532,13 @@ router.route("/getMBOM_hl/:itemName").get(async (req, res) => {
   result.BOM = [];
   var temp = {};
   temp.BOM = [];
-  for (var i = 0; i < ebomData2.length; i++) { 
-    if (ebomData2[i].name == req.params.itemName){
-      for (var j = 0; j < ebomData2[i].children.length; j++){    
-        for (var k = 0; k < ebomData2.length; k++){
-          if (ebomData2[k].id.toString() == ebomData2[i].children[j].toString()){
-            temp.BOM.push(ebomData2[k]);
-            break;
-          }
-        }
-      }
-
-      break;
-    }
-  }
+  // for (var i = 0; i < ebomData.length; i++) { 
+  //   if (ebomData[i].name == req.params.itemName){
+  //     traverseBOM (i, temp);
+  //     break;
+  //   }
+  // }
+  temp.BOM = findInChildren(null, req.params.itemName).children;
   
 
   for (var i = 0; i < temp.BOM.length; i++){
@@ -557,13 +566,13 @@ router.route("/getMBOM_hl/:itemName").get(async (req, res) => {
 
 function traverseBOM (currentProdIdx, result){  
   // process current node
-  result.BOM.push (ebomData2[currentProdIdx]);
+  result.BOM.push (ebomData[currentProdIdx]);
 
   // traverse children
-  for (var i = 0; i < ebomData2[currentProdIdx].children.length; i++){    
+  for (var i = 0; i < ebomData[currentProdIdx].children.length; i++){    
     var nextIdx = -1;
-    for (var j = 0; j < ebomData2.length; j++){
-      if (ebomData2[j].id.toString() == ebomData2[currentProdIdx].children[i].toString()){
+    for (var j = 0; j < ebomData.length; j++){
+      if (ebomData2[j].id.toString() == ebomData[currentProdIdx].children[i].toString()){
         nextIdx = j;
         break;
       }

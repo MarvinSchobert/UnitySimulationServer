@@ -22,7 +22,7 @@ const bestellungAufgeben = async () => {
 	await producer.connect()
   try {
     var id= "bestellung"+Math.floor(Math.random() * 10000);
-    var produktbezeichnung = "Fahrrad"
+    var produktbezeichnung = "Radar"
     var menge = 1
     var kunde = "KUN01"
     var lieferAdresse = "Blumenweg 3 Deutschland"
@@ -656,9 +656,19 @@ router.route("/").get(async (req, res) => {
   
 
   // Kapazitäten anzeigen
-  res.render("simulationOverview", {
-    calculationResults: calculationResults
-  });
+  if (auftraege.length == 0){
+    res.render("simulationOverview", {
+      showSimulation: false,
+      calculationResults: calculationResults
+    });
+  }
+  else {
+    res.render("simulationOverview", {
+      showSimulation: true,
+      calculationResults: calculationResults
+    });
+  }
+  
 });
 
 function getEndOfSimTime (){

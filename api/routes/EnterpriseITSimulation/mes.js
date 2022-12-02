@@ -78,7 +78,7 @@ router.route("/addProductionTask").post((req, res) => {
   data.taskStatus = req.body.taskStatus ?? "active";
   data.taskHistory = req.body.taskHistory ?? [{status : "active", time: new Date(Date.now()).toLocaleString()}];
   productionTasks.push (data);    
-  res.send ("Added Production Task successfully.")
+  res.send (data.taskID)
 });
 
 router.route("/removeProductionTask").post((req, res) => {
