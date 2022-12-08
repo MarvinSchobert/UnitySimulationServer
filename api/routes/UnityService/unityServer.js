@@ -152,9 +152,9 @@ router.route("/register").post((req, res) => {
 });
 
 var PORT = 33333;
-// var HOST = "192.168.137.1";
+var HOST = "192.168.137.1";
 // var HOST = "127.0.0.1;"
-var HOST = "192.168.0.150";
+// var HOST = "192.168.0.150";
 
 var server = dgram.createSocket("udp4");
 
@@ -397,6 +397,9 @@ function changeObject(msg, remote) {
       syncObjects[i].scaleZ = msg.scaleZ;
       syncObjects[i].syncInfoString = msg.syncInfoString;
       syncObjects[i].parentID = ""; // msg.parentID;
+      if (msg.leftHandRelPos != null) { syncObjects[i].leftHandRelPos = msg.leftHandRelPos; }
+      
+      if (msg.rightHandRelPos != null) syncObjects[i].rightHandRelPos = msg.rightHandRelPos;
       for (var j = 0; j < clients.length; j++) {
         if (clients[j].address != remote.address) {
           sendUDP(
