@@ -132,7 +132,6 @@ router.route("/").get(async (req, res) => {
   });
 });
 
-
 router.route("/saveData").post((req, res) => {
   try {
     fs.writeFileSync("ERP_Inventory.json", JSON.stringify(inventory));

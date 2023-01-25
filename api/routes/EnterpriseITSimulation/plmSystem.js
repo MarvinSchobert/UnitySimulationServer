@@ -472,8 +472,6 @@ function findInChildren(obj, itemName, itemId) {
   }
 }
 
-
-
 router.route("/getEBOM/:itemName").get(async (req, res) => {
   var result = {};
   result.BOM = [];

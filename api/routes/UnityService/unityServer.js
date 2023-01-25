@@ -97,21 +97,6 @@ const produceKafkaProductionAck = async (taskId) => {
   } catch (err) {
     console.error("could not write message " + err)
   }
-
-  // try {
-  //   await producer.send({
-  //     topic: "messageorder",
-  //     messages: [
-  //       {
-  //         key: "Nachricht",
-  //         value: JSON.stringify({"id": taskId, "eventKey":"message order"}),
-  //       },
-  //     ],
-  //   })
-  //   console.log("Sending successful");
-  // } catch (err) {
-  //   console.error("could not write message " + err)
-  // }
 }
 
 const consume = async () => {
@@ -121,10 +106,6 @@ const consume = async () => {
 		eachMessage:  async ({message}) => { console.log(JSON.stringify (JSON.parse(message.value))) },  
   })
 }
-
-
-
-
 consume().catch((err) => {
 	console.error("error in consumer: ", err)
 })
@@ -136,8 +117,6 @@ router.route("/produce").post((req, res) => {
 });
 
 router.route("/").get((req, res) => {
-  // res.json(["Tony", "Lisa", "Michael", "Ginger", "Food"]);
-
   res.render("multiplayerOverview", {
     clients: clients,
     items: syncObjects,
@@ -145,7 +124,6 @@ router.route("/").get((req, res) => {
 });
 
 router.route("/register").post((req, res) => {
-  // console.log(req);
   res.render("multiplayerOverview", {
     clients: clients,
   });
@@ -153,7 +131,7 @@ router.route("/register").post((req, res) => {
 
 var PORT = 33333;
 var HOST = "192.168.137.1";
-// var HOST = "127.0.0.1;"
+// var HOST = "172.23.112.1"
 // var HOST = "192.168.0.150";
 
 var server = dgram.createSocket("udp4");

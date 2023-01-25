@@ -1,6 +1,7 @@
 const express = require("express");
 const expressLayouts = require("express-ejs-layouts");
 var bodyParser = require("body-parser");
+const cors = require('cors');
 
 app = express();
 port = process.env.PORT || 3000;
@@ -14,14 +15,14 @@ app.use(
     extended: true,
   })
 );
+app.use(cors())
 
 
 
 
 
-
-const unityRouter = require("./api/routes/UnityService/unityServer");
-app.use("/unityServer", unityRouter);
+// const unityRouter = require("./api/routes/UnityService/unityServer");
+// app.use("/unityServer", unityRouter);
 
 const simulationRouter = require("./api/routes/ProcessSimulation/simulationServer");
 app.use("/simulationServer", simulationRouter);
@@ -46,6 +47,9 @@ app.use("/equipmentSystem", equipmentRouter);
 
 const mesRouter = require("./api/routes/EnterpriseITSimulation/mes");
 app.use("/mes", mesRouter);
+
+const bpmnRouter = require("./api/routes/bpmnModeller");
+app.use("/bpmn", bpmnRouter);
 
 app.get("/", function (req, res) {
   res.render("index");

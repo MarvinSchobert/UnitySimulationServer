@@ -70,14 +70,16 @@ router.route("/getActiveProductionTasks").get(async (req, res) => {
 
 router.route("/addProductionTask").post((req, res) => {
   var data = {};
-  data.ressourceID = req.body.ressourceID;
-  data.inputProducts = req.body.inputProducts;
-  data.outputProducts = req.body.outputProducts;
-  data.processID = req.body.processID;
+  // data.ressourceID = req.body.ressourceID;
+  // data.inputProducts = req.body.inputProducts;
+  // data.outputProducts = req.body.outputProducts;
+  // data.processID = req.body.processID;
+  data = req.body;
   data.taskID = req.body.taskID ?? "T"+Math.floor(Math.random() * 1000).toString();
   data.taskStatus = req.body.taskStatus ?? "active";
   data.taskHistory = req.body.taskHistory ?? [{status : "active", time: new Date(Date.now()).toLocaleString()}];
   productionTasks.push (data);    
+  console.log (JSON.stringify(data));
   res.send (data.taskID)
 });
 
