@@ -42,7 +42,7 @@ function pushNewData(type) {
         changeDate: (new Date("2022-12-18T16:53:21.817Z")).toString(),
         revision: 1,
         verantwortlicher: "Schobert",
-        dienste: ["Geordnetes Speichern", "Ungeordnetes Speichern", "Zusammensetzen", "Kleben","Verschrauben","Zuteilen","Verzweigen","Zusammenführen","Drehen","Verschieben","Ordnen","Weitergeben","Positionieren","Prüfen","Markieren","Reinigen","Bedrucken","Abziehen", "Informationen weiterleiten", "Informationen verarbeiten", "Informationen speichern", "Informationen eingeben"],
+        dienste: ["Geordnetes Speichern", "Ungeordnetes Speichern", "Zusammensetzen", "Kleben", "Verschrauben", "Zuteilen", "Verzweigen", "Zusammenführen", "Drehen", "Verschieben", "Ordnen", "Weitergeben", "Positionieren", "Prüfen", "Markieren", "Reinigen", "Bedrucken", "Abziehen", "Informationen weiterleiten", "Informationen verarbeiten", "Informationen speichern", "Informationen eingeben"],
         linie: "LINIE01",
         werk: "MUENCHEN01",
         status: "Serie",
@@ -266,7 +266,10 @@ function pushNewData(type) {
         changeDate: (new Date("2022-12-18T16:53:21.817Z")).toString(),
         revision: 1,
         verantwortlicher: "Schobert",
-        dienste: ["Geordnetes Speichern", "Ungeordnetes Speichern"],
+        dienste: [
+          { name: "Geordnetes Speichern", parameter: { "Maximale Kapazität": "150 m³", "Maximale Traglast": "3500 kg" } },
+          { name: "Ungeordnetes Speichern", parameter: { "Maximale Kapazität": "250 m³", "Maximale Traglast": "3500 kg" } }
+        ],
         linie: "LINIE01",
         werk: "MUENCHEN01",
         status: "Serie",
@@ -297,7 +300,13 @@ function pushNewData(type) {
         linie: "LINIE01",
         werk: "MUENCHEN01",
         status: "Serie",
-        dienste: ["Geordnetes Speichern", "Positionieren", "Verschieben", "Drehen", "Ordnen", "Weitergeben"],
+        dienste: [
+          { name: "Geordnetes Speichern", parameter: { "Maximale Kapazität": "150 m³", "Maximale Traglast": "3500 kg" } },
+          { name: "Positionieren", parameter: { "Maximale Positioniergenauigkeit": "1 cm", "Maximale Traglast": "3500 kg" } },
+          { name: "Verschieben", parameter: { "Maximale Translationgeschwindigkeit": "2 m/s", "Maximale Traglast": "3500 kg" } },
+          { name: "Drehen", parameter: { "Maximale Rotationsgeschwindigkeit": "5 grad/s", "Maximale Traglast": "3500 kg"  } },
+          { name: "Weitergeben", parameter: { "Maximale Translationgeschwindigkeit": "2 m/s", "Maximale Traglast": "3500 kg"  } }
+        ],
         position: {
           posX: 4.682,
           posY: 0,
@@ -372,32 +381,49 @@ function findPathInNodeTree(target) {
 }
 
 
-const traverseGraph = (jsonObj, parentId = -1, level) => {
+const traverseGraph = (jsonObj, parentId = -1, level, col) => {
   if (jsonObj !== null && typeof jsonObj == "object") {
     Object.entries(jsonObj).forEach(([key, value]) => {
       var i = parseInt(key);
       graphEntryCounter++;
       var itemId = graphEntryCounter;
       if (isNaN(i)) {
-        m_graph.nodes_input.push({ id: itemId, value: 25 - (level) * 5, label: key.toString(), title: "Item ID: " + itemId + ", Level: " + level, color: "rgb(51,255,85)" })
+        if (col == null) {
+          m_graph.nodes_input.push({ id: itemId, value: 35 - (level) * 10, label: key.toString(), title: "Item ID: " + itemId + ", Level: " + level, color: "rgb(51,255,85)" })
+        } 
+        else {
+          console.log(key.toString())
+          m_graph.nodes_input.push({ id: itemId, value: 35 - (level) * 10, label: key.toString(), title: "Item ID: " + itemId + ", Level: " + level, color: col })
+        }       
       }
       else {
-        m_graph.nodes_input.push({ id: itemId, value: 5, label: key.toString(), title: "Item ID: " + itemId + ", Level: " + level, color: "rgb(51,255,85)" })
+        if (col == null) {
+          m_graph.nodes_input.push({ id: itemId, value: 5, label: key.toString(), title: "Item ID: " + itemId + ", Level: " + level, color: "rgb(51,255,85)" })
+        } 
+        else {
+          m_graph.nodes_input.push({ id: itemId, value: 5, label: key.toString(), title: "Item ID: " + itemId + ", Level: " + level, color: col })
+        }        
       }
       if (parentId != -1) {
         m_graph.edges_input.push({ from: itemId, to: parentId })
       }
       if (isNaN(i)) {
-        traverseGraph(value, itemId, level + 1);
+        traverseGraph(value, itemId, level + 1, col);
       }
       else {
-        traverseGraph(value, itemId, level)
+        traverseGraph(value, itemId, level, col)
       }
     });
   } else {
     graphEntryCounter++;
     var itemId = graphEntryCounter;
-    m_graph.nodes_input.push({ id: itemId, value: 25 - (level + 1) * 5, label: jsonObj.toString(), title: "Item ID: " + itemId + ", Level: " + level, color: "rgb(179,25,255)" })
+    
+    if (col == null) {
+      m_graph.nodes_input.push({ id: itemId, value: 5 - (level + 1) * 5, label: jsonObj.toString(), title: "Item ID: " + itemId + ", Level: " + level, color: "rgb(179,25,255)" })
+    } 
+    else {
+      m_graph.nodes_input.push({ id: itemId, value: 5 - (level + 1) * 5, label: jsonObj.toString(), title: "Item ID: " + itemId + ", Level: " + level, color: col })
+    }
     if (parentId != -1) {
       m_graph.edges_input.push({ from: itemId, to: parentId })
     }
@@ -432,13 +458,13 @@ function compareEquipment(equipmentID_1, equipmentID_2) {
   var result1 = [];
   var result2 = [];
   for (var i = 0; i < services1.length; i++) {
-    var m_r = findPathInNodeTree(services1[i]);
+    var m_r = findPathInNodeTree(services1[i].name);
     for (var j = 0; j < m_r.length; j++) {
-      if (!result1.includes(m_r[j]))result1.push(m_r[j]);
+      if (!result1.includes(m_r[j])) result1.push(m_r[j]);
     }
   }
   for (var i = 0; i < services2.length; i++) {
-    var m_r = findPathInNodeTree(services2[i]);
+    var m_r = findPathInNodeTree(services2[i].name);
     for (var j = 0; j < m_r.length; j++) {
       if (!result2.includes(m_r[j])) result2.push(m_r[j]);
     }
@@ -453,19 +479,19 @@ function compareEquipment(equipmentID_1, equipmentID_2) {
   result.equipment1ContainsEquipment2_services = [];
   result.equipment2ContainsEquipment1_services = [];
   for (var i = 0; i < result1.length; i++) {
-    if (result2.includes(result1[i])) { 
+    if (result2.includes(result1[i])) {
       similarityScore++; equipment2ContainsEquipment1++;
-      result.similarServices.push (result1[i]);
-      result.equipment2ContainsEquipment1_services.push (result1[i]);
+      result.similarServices.push(result1[i]);
+      result.equipment2ContainsEquipment1_services.push(result1[i]);
     }
   }
   for (var i = 0; i < result2.length; i++) {
-    if (result1.includes(result2[i])) { 
+    if (result1.includes(result2[i])) {
       similarityScore++; equipment1ContainsEquipment2++;
-      result.equipment1ContainsEquipment2_services.push (result2[i]);
+      result.equipment1ContainsEquipment2_services.push(result2[i]);
     }
   }
-  
+
   result.similarity_score = similarityScore / totalLength;
   result.equipment2containsEquipment1_score = equipment2ContainsEquipment1 / result1.length;
   result.equipment1containsEquipment2_score = equipment1ContainsEquipment2 / result2.length;
@@ -483,7 +509,7 @@ var m_graph =
 
 
 router.route("/compare/:equipmentID1/:equipmentID2").get(async (req, res) => {
-  res.send (compareEquipment(req.params.equipmentID1.toString(), req.params.equipmentID2.toString()))
+  res.send(compareEquipment(req.params.equipmentID1.toString(), req.params.equipmentID2.toString()))
 });
 
 router.route("/graph/:equipmentID").get(async (req, res) => {
@@ -491,11 +517,9 @@ router.route("/graph/:equipmentID").get(async (req, res) => {
   for (var i = 0; i < equipment.length; i++) {
     if (equipment[i].equipmentId == req.params.equipmentID.toString()) {
       if (equipment[i].dienste != null) m_toColorServices = equipment[i].dienste;
-      console.log(m_toColorServices.toString())
       break;
     }
   }
-  if (m_toColorServices.includes("Handhaben")) console.log("Test funktioniert")
 
   graphEntryCounter = 0;
   m_graph =
@@ -507,7 +531,7 @@ router.route("/graph/:equipmentID").get(async (req, res) => {
   };
   traverseGraph(servicesTree2, -1, 0);
   for (var i = 0; i < m_toColorServices.length; i++) {
-    var result = findPathInNodeTree(m_toColorServices[i]);
+    var result = findPathInNodeTree(m_toColorServices[i].name);
     for (var j = 0; j < m_graph.nodes_input.length; j++) {
       for (var k = 0; k < result.length; k++) {
         if (m_graph.nodes_input[j].id == result[k]) {
@@ -515,8 +539,9 @@ router.route("/graph/:equipmentID").get(async (req, res) => {
         }
       }
     }
+    traverseGraph(m_toColorServices[i].parameter, result[result.length - 1], result.length, "rgb(255,168,7)");
   }
-  compareEquipment(req.params.equipmentID.toString(), "E90");
+
   // console.log("graph: " + JSON.stringify(m_graph))
   res.render('graphVisualizer',
     m_graph
