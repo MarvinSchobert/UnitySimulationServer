@@ -1,4 +1,5 @@
 const router = require("express").Router();
+const { Console } = require("console");
 const { TIMEOUT } = require("dns");
 const { json } = require("express");
 const fs = require('fs');
@@ -42,7 +43,29 @@ function pushNewData(type) {
         changeDate: (new Date("2022-12-18T16:53:21.817Z")).toString(),
         revision: 1,
         verantwortlicher: "Schobert",
-        dienste: ["Geordnetes Speichern", "Ungeordnetes Speichern", "Zusammensetzen", "Kleben", "Verschrauben", "Zuteilen", "Verzweigen", "Zusammenführen", "Drehen", "Verschieben", "Ordnen", "Weitergeben", "Positionieren", "Prüfen", "Markieren", "Reinigen", "Bedrucken", "Abziehen", "Informationen weiterleiten", "Informationen verarbeiten", "Informationen speichern", "Informationen eingeben"],
+        dienste: [
+          { name: "Geordnetes Speichern", parameter: { "Maximale Kapazität": "150 m³", "Maximale Traglast": "3500 kg" } },
+          { name: "Ungeordnetes Speichern", parameter: { "parameter1": 5, "Maximale Traglast": "3500 kg" } },
+          { name: "Zusammensetzen", parameter: { "Maximale Kapazität": "250 m³", "Maximale Traglast": "3500 kg" } },
+          { name: "Kleben", parameter: { "Maximale Kapazität": "250 m³", "Maximale Traglast": "3500 kg" } },
+          { name: "Verschrauben", parameter: { "Maximale Kapazität": "250 m³", "Maximale Traglast": "3500 kg" } },
+          { name: "Zuteilen", parameter: { "Maximale Kapazität": "250 m³", "Maximale Traglast": "3500 kg" } },
+          { name: "Verzweigen", parameter: { "Maximale Kapazität": "250 m³", "Maximale Traglast": "3500 kg" } },
+          { name: "Zusammenführen", parameter: { "Maximale Kapazität": "250 m³", "Maximale Traglast": "3500 kg" } },
+          { name: "Drehen", parameter: { "Maximale Kapazität": "250 m³", "Maximale Traglast": "3500 kg" } },
+          { name: "Verschieben", parameter: { "Maximale Kapazität": "250 m³", "Maximale Traglast": "3500 kg" } },
+          { name: "Ordnen", parameter: { "Maximale Kapazität": "250 m³", "Maximale Traglast": "3500 kg" } },
+          { name: "Weitergeben", parameter: { "Maximale Kapazität": "250 m³", "Maximale Traglast": "3500 kg" } },
+          { name: "Prüfen", parameter: { "Maximale Kapazität": "250 m³", "Maximale Traglast": "3500 kg" } },
+          { name: "Markieren", parameter: { "Maximale Kapazität": "250 m³", "Maximale Traglast": "3500 kg" } },
+          { name: "Reinigen", parameter: { "Maximale Kapazität": "250 m³", "Maximale Traglast": "3500 kg" } },
+          { name: "Bedrucken", parameter: { "Maximale Kapazität": "250 m³", "Maximale Traglast": "3500 kg" } },
+          { name: "Abziehen", parameter: { "Maximale Kapazität": "250 m³", "Maximale Traglast": "3500 kg" } },
+          { name: "Informationen weiterleiten", parameter: { "Maximale Kapazität": "250 m³", "Maximale Traglast": "3500 kg" } },
+          { name: "Informationen verarbeiten", parameter: { "Maximale Kapazität": "250 m³", "Maximale Traglast": "3500 kg" } },
+          { name: "Informationen speichern", parameter: { "Maximale Kapazität": "250 m³", "Maximale Traglast": "3500 kg" } },
+          { name: "Informationen eingeben", parameter: { "Maximale Kapazität": "250 m³", "Maximale Traglast": "3500 kg" } }
+        ],
         linie: "LINIE01",
         werk: "MUENCHEN01",
         status: "Serie",
@@ -71,7 +94,10 @@ function pushNewData(type) {
         revision: 1,
         verantwortlicher: "Schobert",
         linie: "LINIE01",
-        dienste: ["Geordnetes Speichern", "Ungeordnetes Speichern"],
+        dienste: [
+          { name: "Geordnetes Speichern", parameter: { "Maximale Kapazität": "250 m³", "Maximale Traglast": "3500 kg" } },
+          { name: "Ungeordnetes Speichern", parameter: { "parameter2": 5, "parameter3": 5 } }
+        ],
         werk: "MUENCHEN01",
         status: "Serie",
         position: {
@@ -99,7 +125,10 @@ function pushNewData(type) {
         revision: 1,
         verantwortlicher: "Schobert",
         linie: "LINIE01",
-        dienste: ["Bedrucken", "Erwärmen"],
+        dienste: [
+          { name: "Bedrucken", parameter: { "Maximale Kapazität": "250 m³", "Maximale Traglast": "3500 kg" } },
+          { name: "Erwärmen", parameter: { "Maximale Kapazität": "250 m³", "Maximale Traglast": "3500 kg" } }
+        ],
         werk: "MUENCHEN01",
         status: "Serie",
         position: {
@@ -126,7 +155,12 @@ function pushNewData(type) {
         changeDate: (new Date("2022-12-18T16:53:21.817Z")).toString(),
         revision: 1,
         verantwortlicher: "Schobert",
-        dienste: ["Weitergeben", "Ungeordnetes Speichern", "Zusammenführen", "Verzweigen"],
+        dienste: [
+          { name: "Weitergeben", parameter: { "Maximale Kapazität": "150 m³", "Maximale Traglast": "3500 kg" } },
+          { name: "Ungeordnetes Speichern", parameter: { "parameter1": 8, "Maximale Traglast": "3500 kg" } },
+          { name: "Zusammenführen", parameter: { "Maximale Kapazität": "250 m³", "Maximale Traglast": "3500 kg" } },
+          { name: "Verzweigen", parameter: { "Maximale Kapazität": "250 m³", "Maximale Traglast": "3500 kg" } }
+        ],
         linie: "LINIE01",
         werk: "MUENCHEN01",
         status: "Serie",
@@ -154,7 +188,10 @@ function pushNewData(type) {
         changeDate: (new Date("2022-12-18T16:53:21.817Z")).toString(),
         revision: 1,
         verantwortlicher: "Schobert",
-        dienste: ["Positionieren", "Zusammensetzen"],
+        dienste: [
+          { name: "Positionieren", parameter: { "parameter1": 5 } },
+          { name: "Zusammensetzen", parameter: { "parameter2": 5 } }
+        ],
         linie: "LINIE01",
         werk: "MUENCHEN01",
         status: "Serie",
@@ -182,7 +219,12 @@ function pushNewData(type) {
         changeDate: (new Date("2022-12-18T16:53:21.817Z")).toString(),
         revision: 1,
         verantwortlicher: "Schobert",
-        dienste: ["Weitergeben", "Ungeordnetes Speichern", "Zusammenführen", "Verzweigen"],
+        dienste: [
+          { name: "Weitergeben", parameter: { "Maximale Kapazität": "150 m³", "Maximale Traglast": "3500 kg" } },
+          { name: "Ungeordnetes Speichern", parameter: { "Maximale Kapazität": "250 m³", "Maximale Traglast": "3500 kg" } },
+          { name: "Zusammenführen", parameter: { "Maximale Kapazität": "250 m³", "Maximale Traglast": "3500 kg" } },
+          { name: "Verzweigen", parameter: { "Maximale Kapazität": "250 m³", "Maximale Traglast": "3500 kg" } }
+        ],
         linie: "LINIE01",
         werk: "MUENCHEN01",
         status: "Serie",
@@ -210,7 +252,11 @@ function pushNewData(type) {
         changeDate: (new Date("2022-12-18T16:53:21.817Z")).toString(),
         revision: 1,
         verantwortlicher: "Schobert",
-        dienste: ["Fügen", "Fügen durch Löten", "Erwärmen"],
+        dienste: [
+          { name: "Fügen", parameter: { "Maximale Kapazität": "150 m³", "Maximale Traglast": "3500 kg" } },
+          { name: "Fügen durch Löten", parameter: { "Maximale Kapazität": "250 m³", "Maximale Traglast": "3500 kg" } },
+          { name: "Erwärmen", parameter: { "Maximale Kapazität": "250 m³", "Maximale Traglast": "3500 kg" } }
+        ],
         linie: "LINIE01",
         werk: "MUENCHEN01",
         status: "Serie",
@@ -238,7 +284,7 @@ function pushNewData(type) {
         changeDate: (new Date("2022-12-18T16:53:21.817Z")).toString(),
         revision: 1,
         verantwortlicher: "Schobert",
-        dienste: ["Weitergeben"],
+        dienste: [{ name: "Weitergeben", parameter: { "Maximale Kapazität": "250 m³", "Maximale Traglast": "3500 kg" } }],
         linie: "LINIE01",
         werk: "MUENCHEN01",
         status: "Serie",
@@ -304,8 +350,8 @@ function pushNewData(type) {
           { name: "Geordnetes Speichern", parameter: { "Maximale Kapazität": "150 m³", "Maximale Traglast": "3500 kg" } },
           { name: "Positionieren", parameter: { "Maximale Positioniergenauigkeit": "1 cm", "Maximale Traglast": "3500 kg" } },
           { name: "Verschieben", parameter: { "Maximale Translationgeschwindigkeit": "2 m/s", "Maximale Traglast": "3500 kg" } },
-          { name: "Drehen", parameter: { "Maximale Rotationsgeschwindigkeit": "5 grad/s", "Maximale Traglast": "3500 kg"  } },
-          { name: "Weitergeben", parameter: { "Maximale Translationgeschwindigkeit": "2 m/s", "Maximale Traglast": "3500 kg"  } }
+          { name: "Drehen", parameter: { "Maximale Rotationsgeschwindigkeit": "5 grad/s", "Maximale Traglast": "3500 kg" } },
+          { name: "Weitergeben", parameter: { "Maximale Translationgeschwindigkeit": "2 m/s", "Maximale Traglast": "3500 kg" } }
         ],
         position: {
           posX: 4.682,
@@ -367,6 +413,7 @@ function findPathInNodeTree(target) {
         if (m_graph.edges_input[i].from == currentIdx) {
           currentIdx = m_graph.edges_input[i].to;
           resultIndices.unshift(currentIdx);
+          // console.log(target + ": " + m_graph.nodes_input[currentIdx].label)
           success = true;
           break;
         }
@@ -376,10 +423,75 @@ function findPathInNodeTree(target) {
         break;
       }
     }
+
+    for (var j = 0; j < m_graph.nodes_input.length; j++) {
+      for (var i = 0; i < resultIndices.length; i++) {
+        if (resultIndices[i].toString() == m_graph.nodes_input[j].id.toString()) {
+          if (!isNaN(parseInt(m_graph.nodes_input[j].label.toString()))) {
+            resultIndices.splice(i, 1);
+          }
+          break;
+        }
+      }
+    }
+    // console.log("Result: " + resultIndices.toString())
     return resultIndices;
   }
 }
 
+router.route("/services/getAll").get(async (req, res) => {
+  var services = [];
+  for (var i = 0; i < m_graph.nodes_input.length; i++) {
+    if (m_graph.nodes_input[i].label.toString() == "Parameter") {
+      break;
+    }
+    else {
+      var nr = parseInt(m_graph.nodes_input[i].label.toString());
+      if (isNaN(nr)) {
+        services.push(m_graph.nodes_input[i].label.toString());
+      }
+    }
+  }
+  res.send(services);
+});
+
+function renewServicesGraph() {
+  graphEntryCounter = 0;
+  m_graph =
+  {
+    nodes_input: [
+    ],
+    edges_input: [
+    ]
+  };
+  traverseGraph(servicesTree2, -1, 0);
+}
+
+router.route("/getSimilarEquipment").post(async (req, res) => {
+  var requestServices = req.body.services;
+  var nrOfResults = req.body.numberOfResults;
+  var result = [];
+  for (var i = 0; i < nrOfResults; i++) {
+    result.push({});
+  }
+
+  // ganzes Equipment absuchen und ähnlichstes Equipment in result schreiben
+  for (var i = 0; i < equipment.length; i++) {
+    // Compare Services/ Equipment
+    var comparison = compareEquipment(requestServices, equipment[i].equipmentId);
+    for (var j = 0; j < result.length; j++) {
+      if (result[j].similarityScore == null || comparison.similarity_score > result[j].similarityScore) {
+        result[j].similarityScore = comparison.similarity_score;
+        result[j].overlapScore = comparison.equipment2containsEquipment1_score;
+        result[j].overlapServices = comparison.equipment2ContainsEquipment1_services;
+        result[j].equipment = equipment[i];
+        break;
+      }
+    }
+  }
+  // console.log("RESULT: " + JSON.stringify(result));
+  res.send({ "response": result });
+});
 
 const traverseGraph = (jsonObj, parentId = -1, level, col) => {
   if (jsonObj !== null && typeof jsonObj == "object") {
@@ -390,19 +502,19 @@ const traverseGraph = (jsonObj, parentId = -1, level, col) => {
       if (isNaN(i)) {
         if (col == null) {
           m_graph.nodes_input.push({ id: itemId, value: 35 - (level) * 10, label: key.toString(), title: "Item ID: " + itemId + ", Level: " + level, color: "rgb(51,255,85)" })
-        } 
+        }
         else {
           console.log(key.toString())
           m_graph.nodes_input.push({ id: itemId, value: 35 - (level) * 10, label: key.toString(), title: "Item ID: " + itemId + ", Level: " + level, color: col })
-        }       
+        }
       }
       else {
         if (col == null) {
           m_graph.nodes_input.push({ id: itemId, value: 5, label: key.toString(), title: "Item ID: " + itemId + ", Level: " + level, color: "rgb(51,255,85)" })
-        } 
+        }
         else {
           m_graph.nodes_input.push({ id: itemId, value: 5, label: key.toString(), title: "Item ID: " + itemId + ", Level: " + level, color: col })
-        }        
+        }
       }
       if (parentId != -1) {
         m_graph.edges_input.push({ from: itemId, to: parentId })
@@ -417,10 +529,10 @@ const traverseGraph = (jsonObj, parentId = -1, level, col) => {
   } else {
     graphEntryCounter++;
     var itemId = graphEntryCounter;
-    
+
     if (col == null) {
       m_graph.nodes_input.push({ id: itemId, value: 5 - (level + 1) * 5, label: jsonObj.toString(), title: "Item ID: " + itemId + ", Level: " + level, color: "rgb(179,25,255)" })
-    } 
+    }
     else {
       m_graph.nodes_input.push({ id: itemId, value: 5 - (level + 1) * 5, label: jsonObj.toString(), title: "Item ID: " + itemId + ", Level: " + level, color: col })
     }
@@ -431,34 +543,24 @@ const traverseGraph = (jsonObj, parentId = -1, level, col) => {
 };
 
 
-function compareEquipment(equipmentID_1, equipmentID_2) {
-
-  if (m_graph.nodes_input.length == 0) {
-    graphEntryCounter = 0;
-    m_graph =
-    {
-      nodes_input: [
-      ],
-      edges_input: [
-      ]
-    };
-    traverseGraph(servicesTree2, -1, 0);
-  }
-
-  var services1 = [];
+function compareEquipment(services1, equipmentID_2) {
+  var equipment2name;
   var services2 = [];
   for (var i = 0; i < equipment.length; i++) {
-    if (equipment[i].equipmentId == equipmentID_1) {
-      if (equipment[i].dienste != null) services1 = equipment[i].dienste;
-    }
     if (equipment[i].equipmentId == equipmentID_2) {
-      if (equipment[i].dienste != null) services2 = equipment[i].dienste;
+      if (equipment[i].dienste != null) {
+        services2 = equipment[i].dienste;
+        equipment2name = equipment[i].name;
+      }
+      break;
     }
   }
   var result1 = [];
   var result2 = [];
+
   for (var i = 0; i < services1.length; i++) {
     var m_r = findPathInNodeTree(services1[i].name);
+    services1[i].id = m_r[m_r.length - 1];
     for (var j = 0; j < m_r.length; j++) {
       if (!result1.includes(m_r[j])) result1.push(m_r[j]);
     }
@@ -469,31 +571,71 @@ function compareEquipment(equipmentID_1, equipmentID_2) {
       if (!result2.includes(m_r[j])) result2.push(m_r[j]);
     }
   }
-
-  var similarityScore = 0;
-  var equipment1ContainsEquipment2 = 0;
+  var similarityScore = 0.0;
+  var equipment1ContainsEquipment2 = 0.0;
   var equipment2ContainsEquipment1 = 0;
   var totalLength = result1.length + result2.length;
   var result = {};
   result.similarServices = [];
   result.equipment1ContainsEquipment2_services = [];
   result.equipment2ContainsEquipment1_services = [];
-  for (var i = 0; i < result1.length; i++) {
-    if (result2.includes(result1[i])) {
-      similarityScore++; equipment2ContainsEquipment1++;
-      result.similarServices.push(result1[i]);
-      result.equipment2ContainsEquipment1_services.push(result1[i]);
+  // Services von 1, die 2 auch kann (Score von 100%: 2 kann alles bzw. mehr, was 1 kann)
+  for (var i1 = 0; i1 < result1.length; i1++) {
+    if (result2.includes(result1[i1])) {
+      // Parameter vergleichen:    
+      // Schauen, ob an dem Service Parameter dran hängen:
+      var fulfill = 1.0;
+      for (var i2 = 0; i2 < services1.length; i2++) {
+        if (services1[i2].id.toString() == result1[i1].toString()) {   
+          fulfill = 0.0;       
+          var parameter1 = services1[i2].parameter;
+          var keys = Object.keys(parameter1);
+          for (var j = 0; j < services2.length; j++) {
+            if (services2[j].name == services1[i2].name) {
+              var parameter2 = services2[j].parameter;
+              var keys2 = Object.keys(parameter2);
+              for (var k = 0; k < keys.length; k++) {
+                if (keys2.includes(keys[k])) {
+                  // Jetzt herausgefunden, dass der Service dieses Property hat!
+                  console.log(equipment2name + " erfüllt Property [" + keys[k] + "] mit Value: " + services2[j].parameter[keys[k]] + " vom Service " + services2[j].name + ". Typ: " + typeof (services2[j].parameter[keys[k]]))
+                  fulfill += 1.0/ keys.length;
+                  equipment2ContainsEquipment1 += fulfill;
+                  break;
+                }
+                else {
+                }
+              }
+              break;
+            }
+          }
+          break;
+        }
+      }
+      similarityScore ++; 
+      result.similarServices.push(result1[i1]);
+      result.equipment2ContainsEquipment1_services.push(result1[i1]);
     }
   }
+
+  for (var i = 0; i < services1.length; i++) {
+    var parameter1 = services1[i].parameter;
+    var keys = Object.keys(parameter1);
+
+
+    // Jetzt schauen, ob Service2 diese Keys enthält
+  }
+
+  // Services von 2, die 1 auch kann (Score von 100%: 1 kann alles bzw. mehr, was 2 kann)
   for (var i = 0; i < result2.length; i++) {
     if (result1.includes(result2[i])) {
+      // SimilarityScore müsste noch angepasst werden, damit auch die Parameter mit in Betracht gezogen werden
       similarityScore++; equipment1ContainsEquipment2++;
       result.equipment1ContainsEquipment2_services.push(result2[i]);
     }
   }
 
   result.similarity_score = similarityScore / totalLength;
-  result.equipment2containsEquipment1_score = equipment2ContainsEquipment1 / result1.length;
+  result.equipment2containsEquipment1_score = equipment2ContainsEquipment1 / services1.length;
   result.equipment1containsEquipment2_score = equipment1ContainsEquipment2 / result2.length;
 
   return result;
@@ -507,12 +649,9 @@ var m_graph =
   edges_input: []
 }
 
+renewServicesGraph();
 
-router.route("/compare/:equipmentID1/:equipmentID2").get(async (req, res) => {
-  res.send(compareEquipment(req.params.equipmentID1.toString(), req.params.equipmentID2.toString()))
-});
-
-router.route("/graph/:equipmentID").get(async (req, res) => {
+router.route("/services/:equipmentID").get(async (req, res) => {
   var m_toColorServices = [];
   for (var i = 0; i < equipment.length; i++) {
     if (equipment[i].equipmentId == req.params.equipmentID.toString()) {
@@ -521,15 +660,8 @@ router.route("/graph/:equipmentID").get(async (req, res) => {
     }
   }
 
-  graphEntryCounter = 0;
-  m_graph =
-  {
-    nodes_input: [
-    ],
-    edges_input: [
-    ]
-  };
-  traverseGraph(servicesTree2, -1, 0);
+  renewServicesGraph();
+
   for (var i = 0; i < m_toColorServices.length; i++) {
     var result = findPathInNodeTree(m_toColorServices[i].name);
     for (var j = 0; j < m_graph.nodes_input.length; j++) {
