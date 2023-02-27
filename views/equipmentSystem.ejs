@@ -22,6 +22,9 @@ Dies ist das Equipment-System
                 <th width=300 > <%= linien[l].equipment[i].revision %> </th>
                 <th width=300 > <%= linien[l].equipment[i].changeDate %> </th>
                 <th width=300 > <%= linien[l].equipment[i].status %> </th>
+                <% for (var j = 0; j < linien[l].equipment[i].dienste.length; j++) { %>                   
+                        <th width=500 > <%= linien[l].equipment[i].dienste[j].name %> </th>
+                <% } %> 
             </tr>
         <% } %>
         </table>

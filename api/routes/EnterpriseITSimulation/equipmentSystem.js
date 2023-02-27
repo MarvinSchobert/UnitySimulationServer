@@ -389,6 +389,7 @@ var servicesTree2 = {
       Sonderoperationen: ["Markieren", "Erwärmen", "Kühlen", "Reinigen", "Entgraten", "Bedrucken", "Abziehen", "Ölen", "Abdichten"],
     },
     Informationstransport: ["Informationen weiterleiten", "Informationen bereitstellen", "Informationen verarbeiten", "Informationen speichern", "Informationen eingeben"]
+
   }
 }
 
@@ -573,7 +574,7 @@ function compareEquipment(services1, equipmentID_2) {
   }
   var similarityScore = 0.0;
   var equipment1ContainsEquipment2 = 0.0;
-  var equipment2ContainsEquipment1 = 0;
+  var equipment2ContainsEquipment1 = 0.0;
   var totalLength = result1.length + result2.length;
   var result = {};
   result.similarServices = [];
@@ -588,21 +589,24 @@ function compareEquipment(services1, equipmentID_2) {
       for (var i2 = 0; i2 < services1.length; i2++) {
         if (services1[i2].id.toString() == result1[i1].toString()) {   
           fulfill = 0.0;       
-          var parameter1 = services1[i2].parameter;
+          var parameter1 = services1[i2].parameter;          
           var keys = Object.keys(parameter1);
           for (var j = 0; j < services2.length; j++) {
             if (services2[j].name == services1[i2].name) {
               var parameter2 = services2[j].parameter;
+              if (parameter2 == null) parameter2 = {};
               var keys2 = Object.keys(parameter2);
               for (var k = 0; k < keys.length; k++) {
                 if (keys2.includes(keys[k])) {
                   // Jetzt herausgefunden, dass der Service dieses Property hat!
                   console.log(equipment2name + " erfüllt Property [" + keys[k] + "] mit Value: " + services2[j].parameter[keys[k]] + " vom Service " + services2[j].name + ". Typ: " + typeof (services2[j].parameter[keys[k]]))
-                  fulfill += 1.0/ keys.length;
+                  fulfill = 1.0/ keys.length;
                   equipment2ContainsEquipment1 += fulfill;
-                  break;
                 }
                 else {
+                  console.log(equipment2name + " erfüllt NICHT Property [" + keys[k] + "]")
+                  fulfill = 0.5/ keys.length;
+                  equipment2ContainsEquipment1 += fulfill;
                 }
               }
               break;
@@ -723,7 +727,7 @@ router.route("/dataById/:id").get(async (req, res) => {
       break;
     }
   }
-  console.log("sending the following data: " + data);
+  console.log("sending the following data: " + JSON.stringify(data));
   res.send(
     {
       "result": data
