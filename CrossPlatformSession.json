@@ -1,0 +1,30 @@
+[
+    {
+        "transform": {
+            "position": {
+                "x": 10.3574409,
+                "y": 0.6400676,
+                "z": 0.286397934
+            },
+            "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0,
+                "w": 1
+            },
+            "scale": {
+                "x": 1,
+                "y": 1,
+                "z": 1
+            }
+        },
+        "id": "5",
+        "prefabId": "pfb-3",
+        "name": "Kugel(Clone)",
+        "deleteOnClientQuit": "False",
+        "ownerClientId": "3",
+        "type": "CREATE",
+        "clientId": "4",
+        "hasPhysics": "True"
+    }
+]

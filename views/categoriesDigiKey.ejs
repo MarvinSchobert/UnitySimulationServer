@@ -1,0 +1,23 @@
+<%- include('partials/header') %>
+
+    <br>
+
+    <div class="col ms-auto">
+        Categories:
+        <% for (var i=0; i < categories.length; i++) { %>
+            <details class="col-lg-8 card">
+                <summary>
+                    <%= categories[i].Name %>
+                </summary>
+                <div>
+                    <ul>
+                    <% for (var j=0; j < categories[i].Children.length; j++) { %>
+                        <li>
+                        <%= categories[i].Children[j].Name %>
+                    </li>
+                    <% } %>
+                </ul>
+                </div>
+            </details>
+            <% } %>
+    </div>

@@ -8,7 +8,7 @@ const { parseXML } = require("jquery");
 
 var equipment = [];
 
-initData("equipment.json", "equipment")
+initData("EquipmentData.json", "equipment")
 
 function initData(path, type) {
   try {
@@ -393,6 +393,14 @@ var servicesTree2 = {
   }
 }
 
+function saveData () {
+  try {
+    fs.writeFileSync("EquipmentData.json", JSON.stringify(equipment));
+  } catch (err) {
+    console.error(err);
+  }
+}
+
 function findPathInNodeTree(target) {
   var currentIdx = -1;
   for (var i = 0; i < m_graph.nodes_input.length; i++) {
@@ -455,6 +463,8 @@ router.route("/services/getAll").get(async (req, res) => {
   }
   res.send(services);
 });
+
+
 
 function renewServicesGraph() {
   graphEntryCounter = 0;
@@ -810,6 +820,7 @@ router.route("/changeEquipment").post((req, res) => {
       finished = true;
       break;
     }
+    saveData();
   }
   if (!finished) {
     newEquipmentData.changeDate = new Date(newEquipmentData.changeDate);
@@ -847,7 +858,7 @@ router.route("/addEquipment").post((req, res) => {
   }
   newEquipmentData.changeDate = new Date(newEquipmentData.changeDate);
   equipment.push(newEquipmentData);
-
+  saveData();
   res.send(
     {
       "equipmentId": newEquipmentData.equipmentId

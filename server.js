@@ -24,8 +24,8 @@ app.use(cors())
 // const unityRouter = require("./api/routes/UnityService/unityServer");
 // app.use("/unityServer", unityRouter);
 
-const simulationRouter = require("./api/routes/ProcessSimulation/simulationServer");
-app.use("/simulationServer", simulationRouter);
+// const simulationRouter = require("./api/routes/ProcessSimulation/simulationServer");
+// app.use("/simulationServer", simulationRouter);
 
 const erpRouter = require("./api/routes/EnterpriseITSimulation/erpSystem");
 app.use("/erpSystem", erpRouter);
@@ -48,8 +48,13 @@ app.use("/equipmentSystem", equipmentRouter);
 const mesRouter = require("./api/routes/EnterpriseITSimulation/mes");
 app.use("/mes", mesRouter);
 
+const categoriesRouter = require("./api/routes/Categories_DigiKey");
+app.use("/categories", categoriesRouter);
+
 const bpmnRouter = require("./api/routes/bpmnModeller");
 app.use("/bpmn", bpmnRouter);
+
+
 
 app.get("/", function (req, res) {
   res.render("index");

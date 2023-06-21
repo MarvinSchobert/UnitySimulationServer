@@ -1,33 +1,35 @@
 <%- include('partials/header') %>
-
-<div>
-    Übersicht über alle aktiven Clients: <br><br>
-    <% for (var i = 0; i < clients.length; i++) { %>
-        <%= clients[i].name %>, PlayerPrefabID: <%= clients[i].playerPrefabID %> 
-        <form action="http://localhost:3000/unityServer/deleteClient" method="POST">
-            <input type="hidden" id="ID" name="ID" value=<%=i%>>
-            <button type="submit">Client löschen</button>
-        </form>  
-        <br>   
-    <% } %>
-
-     
-    <br> <br> 
-    Übersicht über alle aktiven items: <br><br>
-    <% for (var i = 0; i < items.length; i++) { %>
-        Itemname: <%= items[i].name %> , Item ID: <%= items[i].ID %> <%if (items[i].controlledBy != null && items[i].controlledBy != "") { %>, Kontrolliert von: <% } %> 
-        <form action="http://localhost:3000/unityServer/deleteItem" method="POST">
-            <input type="hidden" id="ID" name="ID" value=<%=i%>>
-            <button type="submit">Item löschen</button>
-        </form>   
-        <br>
-        
-    <% } %>
-    <br> 
-    <form action="http://localhost:3000/unityServer/deleteAll" method="POST">
-        <button type="submit">Alle Clients und Items löschen</button>
-    </form> 
-    <form action="http://localhost:3000/unityServer/saveData" method="POST">        
-        <button type="submit">Speichern</button>
-    </form> 
-</div>
+    <div>
+        Übersicht über alle aktiven Clients: <br><br>
+        <% for (var i=0; i < clients.length; i++) { %>
+            <%= clients[i].userName %>, ID: <%= clients[i].clientId %>
+                    <form action="http://localhost:3000/unityServer/deleteClient" method="POST">
+                        <input type="hidden" id="clientId" name="clientId" value=<%=clients[i].clientId%>>
+                        <button type="submit">Client löschen</button>
+                    </form>
+                    <br>
+                    <% } %>
+                        <br> <br>
+                        Übersicht über alle aktiven items: <br><br>
+                        <% for (var i=0; i < items.length; i++) { %>
+                            Itemname: <%= items[i].name %> , Item ID: <%= items[i].id %>
+                                    <%if (items[i].controlledBy !=null && items[i].controlledBy !="" ) { %>,
+                                        Kontrolliert von: <% } %>
+                                            Item: <%= JSON.stringify(items[i]) %>
+                                                <form action="http://localhost:3000/unityServer/deleteItem"
+                                                    method="POST">
+                                                    <input type="hidden" id="id" name="id" value=<%=items[i].id%>>
+                                                    <button type="submit">Item löschen</button>
+                                                </form>
+                                                <br>
+                                                <% } %>
+                                                    <br>
+                                                    <form action="http://localhost:3000/unityServer/deleteAll"
+                                                        method="POST">
+                                                        <button type="submit">Alle Clients und Items löschen</button>
+                                                    </form>
+                                                    <form action="http://localhost:3000/unityServer/saveData"
+                                                        method="POST">
+                                                        <button type="submit">Speichern</button>
+                                                    </form>
+    </div>

@@ -24,6 +24,33 @@ var syncObjects = [];
 
 var clientLeader; // the client that controls Physics and Motion Simulation
 
+
+// TODO SERVER SETUP
+
+
+// TODO REGISTER
+
+
+// TODO CREATE
+
+
+// TODO READ
+
+
+// TODO UPDATE
+
+
+// TODO DELETE
+
+
+// TODO RESPONSE
+
+
+// TODO BROADCAST
+
+
+
+
 setTimeout(function() { initData("SyncObjects.json"); }, 1000);
 
 // Es wird ebomData aus der Datenbank gelesen, wenn Einträge vorhanden sind, diese nehmen, ansonsten generischen Inhalt einfüllen
@@ -216,7 +243,7 @@ server.bind(PORT, HOST);
 function registerClient(msg, remote) {
   var addNew = true;
   for (var i = 0; i < clients.length; i++) {
-    if (clients[i].address == remote.address) {
+    if (clients[i].address == remote.address && clients[i].port == msg.port ) {
       console.log("Client existiert bereits");
       sendAllObjects(i, "SpawnInfo");
       addNew = false;
@@ -346,7 +373,7 @@ function spawnObject(msg, remote) {
   syncObjects.push(obj);
   
   for (var i = 0; i < clients.length; i++) {
-    if (clients[i].address != remote.address) {
+    if (clients[i].address != remote.address || clients[i].playerPrefabID != -1) {
       sendUDP(clients[i].address, clients[i].port, clients[i].name, obj);
     }
     else if (obj.prefabName == "Player_Network"){
